@@ -1,5 +1,5 @@
 //
-//  Activity.swift
+//  ProfileView.swift
 //  BuddyGuard
 //
 //  Created by Feivel Qutby on 02/07/26.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct ActivityView: View {
+struct ProfileView: View {
     var body: some View {
         VStack(spacing: 8) {
             Circle()
@@ -41,5 +41,5 @@ struct ActivityView: View {
 }
 
 #Preview {
-    ActivityView()
+    ProfileView()
 }

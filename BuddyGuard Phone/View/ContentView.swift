@@ -18,6 +18,7 @@ struct ContentView: View {
             }
 
             Tab("Profile", systemImage: "person.2.fill") {
+                ProfileView()
             }
         }
     }
