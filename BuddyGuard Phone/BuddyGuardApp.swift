@@ -15,3 +15,7 @@ struct BuddyGuardApp: App {
         }
     }
 }
+
+#Preview {
+    ContentView()
+}

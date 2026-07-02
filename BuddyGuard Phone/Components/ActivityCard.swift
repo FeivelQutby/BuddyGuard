@@ -5,50 +5,82 @@
 //  Created by Feivel Qutby on 02/07/26.
 //
 
+import MapKit
 import SwiftUI
 
 struct ActivityCard: View {
+    let request: ActivityRequest
+    var onStartTracking: () -> Void = {}
+
+    private let primaryColor = Color(red: 0.31, green: 0.25, blue: 0.79)
+    private let cardColor = Color(red: 0.92, green: 0.91, blue: 1.0)
+
     var body: some View {
-        VStack(alignment: .leading) {
-            HStack {
+        VStack(alignment: .leading, spacing: 10) {
+            HStack(spacing: 12) {
                 Circle()
-                    .frame(width: 50, height: 50)
-                    .foregroundStyle(Color(.systemGray3))
-                VStack(alignment: .leading) {
-                    Text("John Doe")
-                        .font(.body)
-                    Text("Started at 10:00 PM")
-                        .font(.caption2)
+                    .fill(.white)
+                    .frame(width: 52, height: 52)
+                    .overlay(
+                        Image(systemName: "photo.fill")
+                            .font(.caption)
+                            .foregroundStyle(.gray)
+                    )
+                    .overlay(
+                        Circle()
+                            .stroke(Color(.systemGray3), lineWidth: 1)
+                    )
+
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(request.name)
+                        .font(.headline)
+                        .foregroundStyle(.black)
+                    Text(request.startedAt)
+                        .font(.caption)
+                        .foregroundStyle(.black)
                 }
             }
-            Rectangle()
-                .frame(maxWidth: .infinity)
-                .frame(height: 120)
-                .foregroundStyle(Color(.systemGray3))
-            HStack {
-                Text("GOP 9 → Indomaret Foresta")
-                    .font(.caption)
-                Spacer()
-                Text("ETA 22.10 (1,2 km)")
-                    .font(.caption)
+
+            Map(
+                initialPosition: .region(
+                    MKCoordinateRegion(
+                        center: request.coordinate,
+                        span: MKCoordinateSpan(latitudeDelta: 0.012, longitudeDelta: 0.012)
+                    )
+                ),
+                interactionModes: []
+            )
+            .frame(height: 136)
+            .clipShape(RoundedRectangle(cornerRadius: 8))
+            .mapControlVisibility(.hidden)
+
+            HStack(spacing: 8) {
+                Text(request.route)
+                    .lineLimit(1)
+                Spacer(minLength: 8)
+                Text("\(request.eta) (\(request.distance))")
+                    .lineLimit(1)
             }
-            Button(action: {}) {
+            .font(.caption)
+            .foregroundStyle(.black)
+
+            Button(action: onStartTracking) {
                 Text("Start live tracking")
-                    .frame(maxWidth: .infinity)
                     .font(.body)
-                    .foregroundColor(.white)
-                    .padding()
-                    .background(Color(.purple))
-                    .cornerRadius(1000)
+                    .foregroundStyle(.white)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 14)
+                    .background(primaryColor)
+                    .clipShape(Capsule())
             }
         }
-        .padding(20)
-        .background(Color(.blue) .opacity(0.1))
-        .cornerRadius(10)
-        
+        .padding(16)
+        .background(cardColor)
+        .clipShape(RoundedRectangle(cornerRadius: 8))
     }
 }
 
 #Preview {
-    ActivityCard()
+    ActivityCard(request: ActivityViewModel.sampleRequests[0])
+        .padding()
 }

@@ -8,8 +8,41 @@
 import SwiftUI
 
 struct ActivityView: View {
+    @State private var viewModel: ActivityViewModel
+
+    init(viewModel: ActivityViewModel = ActivityViewModel()) {
+        _viewModel = State(initialValue: viewModel)
+    }
+
+    var body: some View {
+        if viewModel.requests.isEmpty {
+            EmptyActivityView()
+        } else {
+            ScrollView {
+                VStack(alignment: .leading, spacing: 14) {
+                    Text("Active Requests")
+                        .font(.title.weight(.bold))
+                        .foregroundStyle(Color(red: 0.16, green: 0.13, blue: 0.42))
+
+                    ForEach(viewModel.requests) { request in
+                        ActivityCard(request: request) {
+                            viewModel.startTracking(request)
+                        }
+                    }
+                }
+                .padding(20)
+            }
+        }
+    }
+}
+
+private struct EmptyActivityView: View {
     var body: some View {
         VStack(spacing: 8) {
+            Divider()
+                .opacity(0)
+                .frame(height: 100)
+
             Circle()
                 .foregroundStyle(.gray)
                 .opacity(0.5)
@@ -20,6 +53,9 @@ struct ActivityView: View {
             Text("There's no active request.")
                 .foregroundStyle(Color(red: 0.16, green: 0.13, blue: 0.42))
                 .font(.system(.caption))
+            Divider()
+                .opacity(0)
+                .frame(height: 100)
             VStack(alignment: .leading, spacing: 8) {
                 Text("How it works?")
                     .font(.body.weight(Font.Weight.semibold))
@@ -36,10 +72,13 @@ struct ActivityView: View {
             )
         }
         .padding(20)
-        
     }
 }
 
-#Preview {
-    ActivityView()
+#Preview("Active Requests") {
+    ActivityView(viewModel: ActivityViewModel(requests: ActivityViewModel.sampleRequests))
+}
+
+#Preview("Empty State") {
+    ActivityView(viewModel: ActivityViewModel(requests: []))
 }
