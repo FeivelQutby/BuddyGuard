@@ -181,7 +181,7 @@ private struct EmergencyContactRow: View {
                     .font(.title2.weight(.semibold))
                     .foregroundStyle(.normal)
             }
-            .padding(.vertical, 16)
+            .padding(.vertical,8)
         }
         .buttonStyle(.plain)
     }
