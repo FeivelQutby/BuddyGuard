@@ -30,7 +30,7 @@ struct ActivityView: View {
                         }
                     }
                 }
-                .padding(20)
+                .padding(16)
             }
         }
     }
@@ -42,16 +42,19 @@ private struct EmptyActivityView: View {
             Divider()
                 .opacity(0)
                 .frame(height: 100)
-
             Circle()
                 .foregroundStyle(.gray)
+                .overlay(
+                    Image(systemName: "photo.fill")
+                        .font(.largeTitle)
+                )
                 .opacity(0.5)
                 .frame(width: 240, height: 240)
             Text("No Active Request")
                 .font(.title.weight(.bold))
-                .foregroundStyle(Color(red: 0.16, green: 0.13, blue: 0.42))
+                .foregroundStyle(.darkActive)
             Text("There's no active request.")
-                .foregroundStyle(Color(red: 0.16, green: 0.13, blue: 0.42))
+                .foregroundStyle(.darkHover)
                 .font(.system(.caption))
             Divider()
                 .opacity(0)
@@ -59,19 +62,19 @@ private struct EmptyActivityView: View {
             VStack(alignment: .leading, spacing: 8) {
                 Text("How it works?")
                     .font(.body.weight(Font.Weight.semibold))
-                    .foregroundStyle(Color(red: 0.16, green: 0.13, blue: 0.42))
+                    .foregroundStyle(.darkActive)
                 Text("• Your friend or family member will send you a help request when they need you.\n• You will receive the notification and real-time location of them.")
                     .font(Font.system(.caption))
-                    .foregroundStyle(Color(red: 0.16, green: 0.13, blue: 0.42))
+                    .foregroundStyle(.darkActive)
             }
-            .padding()
+            .padding(15)
             .frame(maxWidth: .infinity, alignment: .leading)
             .background(
                 RoundedRectangle(cornerRadius: 8)
                     .fill(Color(red: 0.92, green: 0.91, blue: 1.0))
             )
         }
-        .padding(20)
+        .padding(16)
     }
 }
 
