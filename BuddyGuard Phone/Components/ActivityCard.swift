@@ -12,9 +12,6 @@ struct ActivityCard: View {
     let request: ActivityRequest
     var onStartTracking: () -> Void = {}
 
-    private let primaryColor = Color(red: 0.31, green: 0.25, blue: 0.79)
-    private let cardColor = Color(red: 0.92, green: 0.91, blue: 1.0)
-
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             HStack(spacing: 12) {
@@ -25,10 +22,6 @@ struct ActivityCard: View {
                         Image(systemName: "photo.fill")
                             .font(.caption)
                             .foregroundStyle(.gray)
-                    )
-                    .overlay(
-                        Circle()
-                            .stroke(Color(.systemGray3), lineWidth: 1)
                     )
 
                 VStack(alignment: .leading, spacing: 2) {
@@ -70,12 +63,12 @@ struct ActivityCard: View {
                     .foregroundStyle(.white)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 14)
-                    .background(primaryColor)
+                    .background(.normalActive)
                     .clipShape(Capsule())
             }
         }
         .padding(16)
-        .background(cardColor)
+        .background(.light)
         .clipShape(RoundedRectangle(cornerRadius: 8))
     }
 }
