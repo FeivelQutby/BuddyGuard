@@ -12,11 +12,9 @@ struct ContentView: View {
         TabView {
             Tab("Emergency", systemImage: "exclamationmark.shield.fill") {
             }
-
             Tab("Activity", systemImage: "text.document.fill") {
                 ActivityView()
             }
-
             Tab("Profile", systemImage: "person.2.fill") {
                 ProfileView()
             }

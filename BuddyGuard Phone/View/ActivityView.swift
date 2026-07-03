@@ -55,7 +55,7 @@ private struct EmptyActivityView: View {
                 .font(.system(.caption))
             Divider()
                 .opacity(0)
-                .frame(height: 100)
+                .frame(height:50)
             VStack(alignment: .leading, spacing: 8) {
                 Text("How it works?")
                     .font(.body.weight(Font.Weight.semibold))
