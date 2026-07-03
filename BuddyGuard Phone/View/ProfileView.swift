@@ -29,7 +29,7 @@ struct ProfileView: View {
                 Text("􀈊Edit").foregroundColor(.blue)
             }
         }
-        .padding(20)
+        .padding(16)
     }
 }
 

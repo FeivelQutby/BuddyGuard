@@ -30,7 +30,7 @@ struct ActivityView: View {
                         }
                     }
                 }
-                .padding(20)
+                .padding(16)
             }
         }
     }
@@ -42,7 +42,6 @@ private struct EmptyActivityView: View {
             Divider()
                 .opacity(0)
                 .frame(height: 100)
-
             Circle()
                 .foregroundStyle(.gray)
                 .opacity(0.5)
@@ -64,14 +63,14 @@ private struct EmptyActivityView: View {
                     .font(Font.system(.caption))
                     .foregroundStyle(Color(red: 0.16, green: 0.13, blue: 0.42))
             }
-            .padding()
+            .padding(15)
             .frame(maxWidth: .infinity, alignment: .leading)
             .background(
                 RoundedRectangle(cornerRadius: 8)
                     .fill(Color(red: 0.92, green: 0.91, blue: 1.0))
             )
         }
-        .padding(20)
+        .padding(16)
     }
 }
 
