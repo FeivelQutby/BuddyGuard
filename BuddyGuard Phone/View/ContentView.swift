@@ -11,6 +11,7 @@ struct ContentView: View {
     var body: some View {
         TabView {
             Tab("Emergency", systemImage: "exclamationmark.shield.fill") {
+                EmergencyView()
             }
             Tab("Activity", systemImage: "text.document.fill") {
                 ActivityView()
