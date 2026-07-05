@@ -13,13 +13,13 @@ import Observation
 final class ActivityViewModel {
     var requests: [ActivityRequest]
 
-//    init(requests: [ActivityRequest] = ActivityViewModel.sampleRequests) {
-//        self.requests = requests
-//    }
-    
-    init(requests: [ActivityRequest] = []) {
+    init(requests: [ActivityRequest] = ActivityViewModel.sampleRequests) {
         self.requests = requests
     }
+    
+//    init(requests: [ActivityRequest] = []) {
+//        self.requests = requests
+//    }
 
 
     func startTracking(_ request: ActivityRequest) {

@@ -27,10 +27,10 @@ struct ActivityCard: View {
                 VStack(alignment: .leading, spacing: 2) {
                     Text(request.name)
                         .font(.headline)
-                        .foregroundStyle(.black)
+                        .foregroundStyle(.darkActive)
                     Text(request.startedAt)
                         .font(.caption)
-                        .foregroundStyle(.black)
+                        .foregroundStyle(.darkActive)
                 }
             }
 
@@ -55,7 +55,7 @@ struct ActivityCard: View {
                     .lineLimit(1)
             }
             .font(.caption)
-            .foregroundStyle(.black)
+            .foregroundStyle(.darkActive)
 
             Button(action: onStartTracking) {
                 Text("Start live tracking")
@@ -63,17 +63,23 @@ struct ActivityCard: View {
                     .foregroundStyle(.white)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 14)
-                    .background(.normalActive)
+                    .background(.normalActiveNd)
                     .clipShape(Capsule())
             }
         }
         .padding(16)
-        .background(.light)
+        .background(.lightD)
         .clipShape(RoundedRectangle(cornerRadius: 8))
     }
 }
 
-#Preview {
+#Preview("Light") {
     ActivityCard(request: ActivityViewModel.sampleRequests[0])
-        .padding()
+        .padding(15)
+}
+
+#Preview("Dark") {
+    ActivityCard(request: ActivityViewModel.sampleRequests[0])
+        .padding(15)
+        .preferredColorScheme(.dark)
 }

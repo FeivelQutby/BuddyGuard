@@ -76,7 +76,7 @@ struct ProfileView: View {
                         .foregroundStyle(.white)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 18)
-                        .background(.normalActive)
+                        .background(.normalActiveNd)
                         .clipShape(Capsule())
                 }
                 .padding(.horizontal, 50)
@@ -117,22 +117,22 @@ private struct ProfileInfoRow: View {
                 .overlay(
                     Image(systemName: item.icon)
                         .font(.title3.weight(.semibold))
-                        .foregroundStyle(.darkActive)
+                        .foregroundStyle(.darkActiveNd)
                 )
 
             VStack(alignment: .leading, spacing: 4) {
                 Text(item.title)
-                    .font(.body)
-                    .foregroundStyle(.gray)
+                    .font(.subheadline)
+                    .foregroundStyle(.labelSecond)
 
                 Text(item.value)
-                    .font(.title3.weight(.semibold))
+                    .font(.headline.weight(.semibold))
                     .foregroundStyle(.darkActive)
             }
 
             Spacer()
         }
-        .padding(.vertical, 16)
+        .padding(.vertical, 8)
     }
 }
 
@@ -160,7 +160,6 @@ private struct EmergencyContactRow: View {
     let contact: EmergencyContact
 
     var body: some View {
-        Button(action: {}) {
             HStack(spacing: 16) {
                 Circle()
                     .fill(.light)
@@ -168,29 +167,24 @@ private struct EmergencyContactRow: View {
                     .overlay(
                         Image(systemName: "person.fill")
                             .font(.title3.weight(.semibold))
-                            .foregroundStyle(.darkActive)
+                            .foregroundStyle(.darkActiveNd)
                     )
 
                 Text(contact.name)
-                    .font(.body.weight(.semibold))
+                    .font(.headline.weight(.semibold))
                     .foregroundStyle(.darkActive)
 
                 Spacer()
-
-                Image(systemName: "chevron.right")
-                    .font(.title2.weight(.semibold))
-                    .foregroundStyle(.normal)
             }
             .padding(.vertical,8)
-        }
-        .buttonStyle(.plain)
     }
 }
 
-#Preview {
+#Preview("Light Mode") {
     ProfileView()
 }
 
-#Preview("Contact") {
-    ProfileView(viewModel: ProfileViewModel(selectedSegment: .contact))
+#Preview("Dark Mode") {
+    ProfileView()
+    .preferredColorScheme(.dark)
 }

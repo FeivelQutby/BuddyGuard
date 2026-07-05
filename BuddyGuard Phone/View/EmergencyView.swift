@@ -21,13 +21,13 @@ struct EmergencyView: View {
             VStack (alignment: .leading) {
                 Text("Good Evening, Maya!👋")
                     .font(.title.bold())
-                    .foregroundStyle(.darker)
+                    .foregroundStyle(.darkActive)
                 Text("Stay safe, wherever you go!")
                     .font(.footnote)
-                    .foregroundStyle(.dark)
+                    .foregroundStyle(.darkActive)
                 Text("**BuddyGuard** is here to help you!")
                     .font(.footnote)
-                    .foregroundStyle(.dark)
+                    .foregroundStyle(.darkActive)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             .opacity(isPressing ? 0.0 : 1.0)
@@ -36,17 +36,17 @@ struct EmergencyView: View {
             VStack {
                 // MARK: - Tooltip
                 VStack(spacing: 0) {
-                    Text("Hold me for 3 seconds to activate\nemergency mode")
-                        .font(.footnote.bold())
+                    Text("**Hold me** for 3 seconds to activate\nemergency mode")
+                        .font(.footnote)
                         .multilineTextAlignment(.center)
-                        .foregroundStyle(.normal)
+                        .foregroundStyle(.darkActive)
                         .fixedSize(horizontal: false, vertical: true)
                         .padding(10)
-                        .background(.light)
+                        .background(.lightD)
                         .cornerRadius(16)
                     
                     Image(systemName: "arrowtriangle.down.fill")
-                        .foregroundStyle(.light)
+                        .foregroundStyle(.lightD)
                         .font(.largeTitle)
                 }
                 
@@ -58,11 +58,11 @@ struct EmergencyView: View {
                     .overlay(
                         ZStack {
                             Circle()
-                                .stroke(.light, lineWidth: 20)
+                                .stroke(.lightD, lineWidth: 20)
                             
                             Circle()
                                 .trim(from: 0.0, to: progress)
-                                .stroke(.dark, style: StrokeStyle(lineWidth: 20, lineCap: .round))
+                                .stroke(.darkActive, style: StrokeStyle(lineWidth: 20, lineCap: .round))
                                 .rotationEffect(.degrees(-90))
                         }
                     )
@@ -82,11 +82,11 @@ struct EmergencyView: View {
                     VStack(spacing: 4) {
                         Text(String(format: "%05.2fs", timeElapsed))
                             .font(.system(size: 36, weight: .bold))
-                            .foregroundStyle(.normal)
+                            .foregroundStyle(.darkActive)
                         
                         Text("Release the button to cancel!")
                             .font(.footnote)
-                            .foregroundStyle(.dark)
+                            .foregroundStyle(.darkActive)
                     }
                     .padding(.top, 24)
                     .transition(.opacity) // Smooth fade in/out
@@ -100,7 +100,7 @@ struct EmergencyView: View {
                     .font(.title2)
                     .foregroundStyle(.white)
                     .padding(11)
-                    .background(.normalActive)
+                    .background(.normalActiveNd)
                     .cornerRadius(.infinity)
                 
                 VStack (alignment: .leading) {
@@ -114,7 +114,7 @@ struct EmergencyView: View {
             }
             .frame(maxWidth: .infinity)
             .padding(16)
-            .background(.light)
+            .background(.lightD)
             .cornerRadius(16)
             .opacity(isPressing ? 0.0 : 1.0)
             .animation(.easeInOut(duration: 0.2), value: isPressing)
@@ -160,6 +160,11 @@ struct EmergencyView: View {
     }
 }
 
-#Preview {
+#Preview("Light") {
     EmergencyView()
+}
+
+#Preview("Dark") {
+    EmergencyView()
+        .preferredColorScheme(.dark)
 }

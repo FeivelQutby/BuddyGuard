@@ -22,7 +22,7 @@ struct ActivityView: View {
                 VStack(alignment: .leading, spacing: 14) {
                     Text("Active Requests")
                         .font(.title.weight(.bold))
-                        .foregroundStyle(Color(red: 0.16, green: 0.13, blue: 0.42))
+                        .foregroundStyle(.darkActive)
 
                     ForEach(viewModel.requests) { request in
                         ActivityCard(request: request) {
@@ -39,9 +39,6 @@ struct ActivityView: View {
 private struct EmptyActivityView: View {
     var body: some View {
         VStack(spacing: 8) {
-            Divider()
-                .opacity(0)
-                .frame(height: 100)
             Circle()
                 .foregroundStyle(.gray)
                 .overlay(
@@ -58,20 +55,20 @@ private struct EmptyActivityView: View {
                 .font(.system(.caption))
             Divider()
                 .opacity(0)
-                .frame(height:50)
+                .frame(height:20)
             VStack(alignment: .leading, spacing: 8) {
                 Text("How it works?")
                     .font(.body.weight(Font.Weight.semibold))
-                    .foregroundStyle(.darkActive)
+                    .foregroundStyle(.darkActiveNd)
                 Text("• Your friend or family member will send you a help request when they need you.\n• You will receive the notification and real-time location of them.")
                     .font(Font.system(.caption))
-                    .foregroundStyle(.darkActive)
+                    .foregroundStyle(.darkActiveNd)
             }
             .padding(15)
             .frame(maxWidth: .infinity, alignment: .leading)
             .background(
                 RoundedRectangle(cornerRadius: 8)
-                    .fill(Color(red: 0.92, green: 0.91, blue: 1.0))
+                    .fill(.light) // nd
             )
         }
         .padding(16)
@@ -82,6 +79,16 @@ private struct EmptyActivityView: View {
     ActivityView(viewModel: ActivityViewModel(requests: ActivityViewModel.sampleRequests))
 }
 
+#Preview("Active Requests Dark") {
+    ActivityView(viewModel: ActivityViewModel(requests: ActivityViewModel.sampleRequests))
+        .preferredColorScheme(.dark)
+}
+
+
 #Preview("Empty State") {
     ActivityView(viewModel: ActivityViewModel(requests: []))
+}
+#Preview("Empty State Dark") {
+    ActivityView(viewModel: ActivityViewModel(requests: []))
+        .preferredColorScheme(.dark)
 }
