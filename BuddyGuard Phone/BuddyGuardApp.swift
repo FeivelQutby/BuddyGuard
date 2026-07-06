@@ -16,6 +16,11 @@ struct BuddyGuardApp: App {
     }
 }
 
-#Preview {
+#Preview("Light Mode") {
     ContentView()
+}
+
+#Preview("Dark Mode") {
+    ContentView()
+    .preferredColorScheme(.dark)
 }

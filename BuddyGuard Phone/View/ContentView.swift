@@ -20,7 +20,7 @@ struct ContentView: View {
                 ProfileView()
             }
         }
-        .tint(.normalActive)
+        .tint(.normalActiveNd)
         
     }
 }
