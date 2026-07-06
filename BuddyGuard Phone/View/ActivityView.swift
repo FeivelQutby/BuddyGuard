@@ -36,7 +36,7 @@ struct ActivityView: View {
             }
         }
         .fullScreenCover(item: $viewModel.activeRequest) { request in
-            MapView(request: request)
+            MapView(request: request, role: .emergencyContact)
         }
     }
 }
@@ -88,7 +88,6 @@ private struct EmptyActivityView: View {
     ActivityView(viewModel: ActivityViewModel(requests: ActivityViewModel.sampleRequests))
         .preferredColorScheme(.dark)
 }
-
 
 #Preview("Empty State") {
     ActivityView(viewModel: ActivityViewModel(requests: []))

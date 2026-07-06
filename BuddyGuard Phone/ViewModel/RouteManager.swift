@@ -70,10 +70,10 @@ class RouteManager {
         }
     }
     
-    func getSourcePlaceName() async -> String?{
-        let source = CLLocation(latitude: DummyData.user1.coordinate.latitude, longitude: DummyData.user1.coordinate.longitude)
+    func getSourcePlaceName(from source: CLLocationCoordinate2D) async -> String?{
+        let location = CLLocation(latitude: source.latitude, longitude: source.longitude)
         
-        guard let request = MKReverseGeocodingRequest(location: source) else { return "" }
+        guard let request = MKReverseGeocodingRequest(location: location) else { return "" }
         
         do{
             let mapItems = try await request.mapItems
@@ -84,4 +84,3 @@ class RouteManager {
         }
     }
 }
-

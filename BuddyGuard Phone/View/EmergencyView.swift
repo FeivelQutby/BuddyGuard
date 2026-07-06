@@ -12,6 +12,7 @@ struct EmergencyView: View {
     @State private var timeElapsed: Double = 0.0
     @State private var isPressing = false
     @State private var timer: Timer?
+    @State private var showMap = false
 
     var body: some View {
         
@@ -121,11 +122,13 @@ struct EmergencyView: View {
         }
         .frame(maxWidth: .infinity)
         .padding(16)
+        .fullScreenCover(isPresented: $showMap, onDismiss: { stopHolding() }) {
+            MapView(role: .activeUser)
+        }
     }
     
     // MARK: - Animation Control Logic
     private func startHolding() {
-        // Wrapped in withAnimation so the layout expands smoothly
         withAnimation(.easeInOut(duration: 0.25)) {
             isPressing = true
         }
@@ -140,7 +143,7 @@ struct EmergencyView: View {
                 progress = 1.0
                 timer?.invalidate()
                 
-                print("Emergency triggered!")
+                showMap = true
             } else {
                 progress = CGFloat(timeElapsed / 3.0)
             }
@@ -151,7 +154,6 @@ struct EmergencyView: View {
         timer?.invalidate()
         timer = nil
         
-        // Wrapped in withAnimation so the layout collapses smoothly
         withAnimation(.easeInOut(duration: 0.25)) {
             isPressing = false
             progress = 0.0

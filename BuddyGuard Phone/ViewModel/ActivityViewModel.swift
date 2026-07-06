@@ -17,11 +17,6 @@ final class ActivityViewModel {
     init(requests: [ActivityRequest] = ActivityViewModel.sampleRequests) {
         self.requests = requests
     }
-    
-//    init(requests: [ActivityRequest] = []) {
-//        self.requests = requests
-//    }
-
 
     func startTracking(_ request: ActivityRequest) {
         activeRequest = request
@@ -36,7 +31,8 @@ extension ActivityViewModel {
             route: "GOP 9 -> Indomaret Foresta",
             eta: "ETA 22.10",
             distance: "1,2 km",
-            coordinate: CLLocationCoordinate2D(latitude: -6.3024, longitude: 106.6527)
+            coordinate: CLLocationCoordinate2D(latitude: -6.3024, longitude: 106.6527),
+            state: .OnTheWay
         ),
         ActivityRequest(
             name: "Clarice",
@@ -44,7 +40,8 @@ extension ActivityViewModel {
             route: "Ice Business -> Alfamart Ice",
             eta: "ETA 22.00",
             distance: "1,2 km",
-            coordinate: CLLocationCoordinate2D(latitude: -6.3024, longitude: 106.6527)
+            coordinate: CLLocationCoordinate2D(latitude: -6.3024, longitude: 106.6527),
+            state: .Urgent
         )
     ]
 }

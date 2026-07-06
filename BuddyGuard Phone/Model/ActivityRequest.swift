@@ -16,6 +16,7 @@ struct ActivityRequest: Identifiable {
     let eta: String
     let distance: String
     let coordinate: CLLocationCoordinate2D
+    let state: UserState
 
     init(
         id: UUID = UUID(),
@@ -24,7 +25,8 @@ struct ActivityRequest: Identifiable {
         route: String,
         eta: String,
         distance: String,
-        coordinate: CLLocationCoordinate2D
+        coordinate: CLLocationCoordinate2D,
+        state: UserState = .OnTheWay
     ) {
         self.id = id
         self.name = name
@@ -33,5 +35,6 @@ struct ActivityRequest: Identifiable {
         self.eta = eta
         self.distance = distance
         self.coordinate = coordinate
+        self.state = state
     }
 }
