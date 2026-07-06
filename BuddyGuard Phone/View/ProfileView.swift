@@ -111,14 +111,21 @@ private struct ProfileInfoRow: View {
 
     var body: some View {
         HStack(spacing: 16) {
-            Circle()
-                .fill(.light)
-                .frame(width: 48, height: 48)
-                .overlay(
-                    Image(systemName: item.icon)
-                        .font(.title3.weight(.semibold))
-                        .foregroundStyle(.darkActiveNd)
-                )
+//            Circle()
+//                .fill(.light)
+//                .frame(width: 48, height: 48)
+//                .overlay(
+//                    Image(systemName: item.icon)
+//                        .font(.title3.weight(.semibold))
+//                        .foregroundStyle(.darkActiveNd)
+//                )
+            
+            Image(systemName: item.icon)
+                .font(.title2)
+                .foregroundStyle(.white)
+                .padding(11)
+                .background(.normalActiveNd)
+                .cornerRadius(.infinity)
 
             VStack(alignment: .leading, spacing: 4) {
                 Text(item.title)
