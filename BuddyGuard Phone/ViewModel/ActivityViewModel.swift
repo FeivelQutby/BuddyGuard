@@ -12,6 +12,7 @@ import Observation
 @Observable
 final class ActivityViewModel {
     var requests: [ActivityRequest]
+    var activeRequest: ActivityRequest?
 
     init(requests: [ActivityRequest] = ActivityViewModel.sampleRequests) {
         self.requests = requests
@@ -23,7 +24,7 @@ final class ActivityViewModel {
 
 
     func startTracking(_ request: ActivityRequest) {
-        // Hook live tracking flow here when the tracking screen is ready.
+        activeRequest = request
     }
 }
 

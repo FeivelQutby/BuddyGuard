@@ -11,8 +11,12 @@ import SwiftData
 
 struct MapView: View{
     
+    let request: ActivityRequest
+    
     let sourcePlacemark = MKMapItem(location: .source, address: nil)
     let destination = MKMapItem(location: .destination, address: nil)
+    
+    @Environment(\.dismiss) private var dismiss
     
     @State private var locationManager = LocationManager()
     @State private var routeManager = RouteManager()
@@ -25,7 +29,7 @@ struct MapView: View{
     var body: some View{
         ZStack{
             Map(position: $locationManager.camera){
-                Annotation("\(DummyData.user1.nama)", coordinate: DummyData.user1.coordinate, anchor: .bottom){
+                Annotation("\(request.name)", coordinate: request.coordinate, anchor: .bottom){
                     Circle().fill(Color.blue)
                 }
                 
@@ -47,12 +51,12 @@ struct MapView: View{
                 locationManager.manager.requestWhenInUseAuthorization()
             }
             .task{
-                routeManager.routeFriendToDestination = await routeManager.getRoute(from: DummyData.user1.coordinate, to: DummyData.safeZone.safeAddress)
-                routeManager.routeToFriend = await routeManager.getRoute(from: locationManager.coordinate, to: DummyData.user1.coordinate)
+                routeManager.routeFriendToDestination = await routeManager.getRoute(from: request.coordinate, to: DummyData.safeZone.safeAddress)
+                routeManager.routeToFriend = await routeManager.getRoute(from: locationManager.coordinate, to: request.coordinate)
             }
             .onChange(of: locationManager.coordinate){ oldValue, newValue in
                 Task{
-                    routeManager.routeToFriend = await routeManager.getRoute(from: newValue, to: DummyData.user1.coordinate)
+                    routeManager.routeToFriend = await routeManager.getRoute(from: newValue, to: request.coordinate)
                 }
             }
             .sheet(isPresented: $showSheet){
@@ -80,7 +84,7 @@ struct MapView: View{
             
             VStack{
                 HStack(alignment: .top){
-                    Button(action: {}) {
+                    Button(action: { dismiss() }) {
                         Image(systemName: "chevron.backward").frame(width: 20, height: 20)
                     }.buttonStyle(.glass).buttonBorderShape(.circle).controlSize(.large)
                     Spacer()
@@ -118,7 +122,7 @@ struct MapView: View{
 }
 
 #Preview {
-    MapView()
+    MapView(request: ActivityViewModel.sampleRequests[0])
 }
 
 extension CLLocation{

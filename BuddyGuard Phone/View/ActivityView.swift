@@ -15,23 +15,28 @@ struct ActivityView: View {
     }
 
     var body: some View {
-        if viewModel.requests.isEmpty {
-            EmptyActivityView()
-        } else {
-            ScrollView {
-                VStack(alignment: .leading, spacing: 14) {
-                    Text("Active Requests")
-                        .font(.title.weight(.bold))
-                        .foregroundStyle(.darkActive)
+        Group {
+            if viewModel.requests.isEmpty {
+                EmptyActivityView()
+            } else {
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 14) {
+                        Text("Active Requests")
+                            .font(.title.weight(.bold))
+                            .foregroundStyle(.darkActive)
 
-                    ForEach(viewModel.requests) { request in
-                        ActivityCard(request: request) {
-                            viewModel.startTracking(request)
+                        ForEach(viewModel.requests) { request in
+                            ActivityCard(request: request) {
+                                viewModel.startTracking(request)
+                            }
                         }
                     }
+                    .padding(16)
                 }
-                .padding(16)
             }
+        }
+        .fullScreenCover(item: $viewModel.activeRequest) { request in
+            MapView(request: request)
         }
     }
 }
@@ -68,7 +73,7 @@ private struct EmptyActivityView: View {
             .frame(maxWidth: .infinity, alignment: .leading)
             .background(
                 RoundedRectangle(cornerRadius: 8)
-                    .fill(.light) // nd
+                    .fill(.lightActive) // nd
             )
         }
         .padding(16)

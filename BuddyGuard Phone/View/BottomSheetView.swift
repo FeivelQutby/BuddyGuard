@@ -63,7 +63,7 @@ struct BottomSheetView: View{
 }
 
 #Preview {
-    @State var sheetDetent: PresentationDetent = .height(80)
-    @State var routeManager: RouteManager = RouteManager()
+    @Previewable @State var sheetDetent: PresentationDetent = .height(80)
+    @Previewable @State var routeManager: RouteManager = RouteManager()
     BottomSheetView(sheetDetent: $sheetDetent, routeManager: $routeManager)
 }
