@@ -534,7 +534,7 @@ struct MapView: View {
         .controlSize(.large)
         .offset(y: -sheetHeight)
         .animation(.interpolatingSpring(duration: animationDuration, bounce: 0, initialVelocity: 0), value: sheetHeight)
-        .tint(Color.normalActive)
+        .tint(.normalActiveNd)
     }
 }
 
@@ -542,8 +542,18 @@ struct MapView: View {
     MapView(request: ActivityViewModel.sampleRequests[0], role: .emergencyContact)
 }
 
+#Preview("Emergency Contact Dark") {
+    MapView(request: ActivityViewModel.sampleRequests[0], role: .emergencyContact)
+        .preferredColorScheme(.dark)
+}
+
 #Preview("Active User") {
     MapView(role: .activeUser)
+}
+
+#Preview("Active User Dark") {
+    MapView(role: .activeUser)
+        .preferredColorScheme(.dark)
 }
 
 extension CLLocation {

@@ -23,17 +23,17 @@ struct LoginView: View {
             Spacer()
             
             // MARK: - Header & Logo
-            VStack(spacing: 12) {
-                Image(systemName: "teddybear.fill")
-                    .font(.system(size: 80))
-                    .foregroundStyle(Color("dark", bundle: nil))
-                
+            VStack(spacing: 8) {
                 Text("BuddyGuard")
-                    .font(.system(size: 32, weight: .bold, design: .rounded))
-                
-                Text("Your personal safety companion.")
-                    .font(.subheadline)
+                    .font(.system(size: 48, weight: .bold, design: .rounded))
+                    .foregroundStyle(.darkActive)
+                Text("We're here to keep you safe.")
+                    .font(.body.italic())
                     .foregroundColor(.secondary)
+                
+                Image(systemName: "teddybear.fill")
+                    .font(.system(size: 192))
+                    .foregroundStyle(Color("dark", bundle: nil))
             }
             
             Spacer()
@@ -57,10 +57,11 @@ struct LoginView: View {
                 // 2. Custom Google Sign In Button
                 Button(action: {
                     handleGoogleLogin()
-                }) {
+                }){
                     HStack(spacing: 12) {
-                        Image(systemName: "g.circle.fill")
-                            .font(.title2)
+                        Image("google")
+                            .resizable()
+                            .frame(width: 16, height: 16)
                         
                         Text("Sign in with Google")
                             .font(.system(size: 19, weight: .semibold))
@@ -207,4 +208,12 @@ struct LoginView: View {
     }
 }
 
+#Preview("Light") {
+    LoginView()
+}
+
+#Preview("Dark") {
+    LoginView()
+        .preferredColorScheme(.dark)
+}
 

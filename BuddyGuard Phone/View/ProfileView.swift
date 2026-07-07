@@ -188,12 +188,12 @@ private struct ProfileInfoRow: View {
     var body: some View {
         HStack(spacing: 16) {
             Circle()
-                .fill(.light)
+                .fill(.lightD2)
                 .frame(width: 44, height: 44)
                 .overlay(
                     Image(systemName: icon)
                         .font(.body.weight(.semibold))
-                        .foregroundStyle(.darkActiveNd)
+                        .foregroundStyle(.darkActive)
                 )
             VStack(alignment: .leading, spacing: 3) {
                 Text(title)
@@ -322,11 +322,11 @@ private struct EmergencyContactRow: View {
         HStack(spacing: 16) {
             ZStack {
                 Circle()
-                    .fill(.light)
+                    .fill(.lightD2)
                     .frame(width: 44, height: 44)
                 Text(contact.displayName.prefix(1).uppercased())
                     .font(.body.weight(.bold))
-                    .foregroundStyle(.darkActiveNd)
+                    .foregroundStyle(.darkActive)
             }
             VStack(alignment: .leading, spacing: 2) {
                 Text(contact.displayName)

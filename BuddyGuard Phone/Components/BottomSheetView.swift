@@ -52,11 +52,11 @@ private struct EmergencyContactDetail: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 20){
-            Text("\(request.name)'s Activity").font(.largeTitle).fontWeight(.bold).frame(alignment: .topLeading)
+            Text("\(request.name)'s Activity").font(.largeTitle).fontWeight(.bold).frame(alignment: .topLeading).foregroundStyle(.darkActive)
             
             HStack{
                 VStack(alignment: .leading){
-                    Text("\(request.name)'s status").font(.footnote)
+                    Text("\(request.name)'s status").font(.footnote).foregroundStyle(.darkActive)
                     RoundedRectangle(cornerRadius: 10).fill(liveStatus.fillColor).stroke(liveStatus.strokeColor, lineWidth: 2).frame(height: 50).overlay(
                         Text(liveStatus.label).font(.title3).fontWeight(.bold).foregroundColor(.black).frame(maxWidth: .infinity,alignment: .leading).padding()
                     )
@@ -64,8 +64,10 @@ private struct EmergencyContactDetail: View {
                 
                 VStack(alignment: .leading){
                     Text("From").font(.footnote)
+                        .foregroundStyle(.darkActive)
                     RoundedRectangle(cornerRadius: 10).fill(Color.clear).frame(height: 50).overlay(
-                        Text("\(routeManager.sourcePlaceName ?? "Unknown location")").font(.title3).fontWeight(.bold).foregroundColor(.white).frame(maxWidth: .infinity,alignment: .leading)
+                        Text("\(routeManager.sourcePlaceName ?? "Unknown location")").font(.title3).fontWeight(.bold).frame(maxWidth: .infinity,alignment: .leading)
+                            .foregroundStyle(.darkActive)
                     )
                 }.frame(maxWidth: .infinity, alignment: .leading)
             }.task{
@@ -75,12 +77,16 @@ private struct EmergencyContactDetail: View {
             HStack{
                 VStack(alignment: .leading){
                     Text("\(routeManager.safePlaceName ?? "Finding location...")").font(.body).fontWeight(.bold)
+                        .foregroundStyle(.darkActive)
                     Text("\(routeManager.safePlaceAddress ?? "...")").font(.footnote)
+                        .foregroundStyle(.darkActive)
                 }.frame(maxWidth: .infinity, alignment: .leading)
                 
                 VStack(alignment: .leading){
                     Text("ETA").font(.footnote)
+                        .foregroundStyle(.darkActive)
                     Text("\(routeManager.eta ?? "...") (\(routeManager.distance ?? "...") km)").font(.title3).fontWeight(.bold)
+                        .foregroundStyle(.darkActive)
                 }.frame(maxWidth: .infinity, alignment: .leading)
             }
         }.padding()
@@ -95,7 +101,7 @@ private struct EmergencyContactDetail: View {
             HStack(spacing: 8) {
                 if isNavigating {
                     Image(systemName: "figure.walk")
-                    Text("En Route to Safe Place")
+                    Text("I'm going to Safe Place")
                 } else {
                     Image(systemName: "car.fill")
                     Text("I'm on my way")
@@ -105,7 +111,7 @@ private struct EmergencyContactDetail: View {
             .frame(maxWidth: .infinity, maxHeight: 50)
         }
         .buttonStyle(.borderedProminent)
-        .tint(isNavigating ? .green : .normalActive)
+        .tint(isNavigating ? .green : .normalActiveNd)
         .padding()
     }
 }
@@ -119,27 +125,31 @@ private struct ActiveUserDetail: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 20){
-            Text("Heading to Safety").font(.largeTitle).fontWeight(.bold).frame(alignment: .topLeading)
+            Text("Heading to Safety")
+                .foregroundStyle(.darkActive).font(.largeTitle).fontWeight(.bold).frame(alignment: .topLeading)
             
             VStack(alignment: .leading){
                 Text("Destination").font(.footnote)
-                Text("\(routeManager.safePlaceName ?? "Finding location...")").font(.title3).fontWeight(.bold)
-                Text("\(routeManager.safePlaceAddress ?? "...")").font(.footnote)
+                    .foregroundStyle(.darkActive)
+                Text("\(routeManager.safePlaceName ?? "Finding location...")").font(.title3).fontWeight(.bold).foregroundStyle(.darkActive)
+                Text("\(routeManager.safePlaceAddress ?? "...")").font(.footnote).foregroundStyle(.darkActive)
             }.frame(maxWidth: .infinity, alignment: .leading)
             
             VStack(alignment: .leading){
                 Text("ETA").font(.footnote)
+                    .foregroundStyle(.darkActive)
                 Text("\(routeManager.eta ?? "...") (\(routeManager.distance ?? "...") km)").font(.title3).fontWeight(.bold)
+                    .foregroundStyle(.darkActive)
             }.frame(maxWidth: .infinity, alignment: .leading)
             
             HStack(spacing: 12){
                 Button(action: onSOS){
-                    Text("SOS").foregroundColor(.white).frame(maxWidth: .infinity, maxHeight: 50)
-                }.buttonStyle(.borderedProminent).tint(.statusRed)
+                    Text("SOS").foregroundColor(.white).frame(maxWidth: .infinity, maxHeight: 50).fontWeight(.bold)
+                }.buttonStyle(.borderedProminent).tint(.red)
                 
                 Button(action: onImSafe){
-                    Text("I'm Safe").foregroundColor(.white).frame(maxWidth: .infinity, maxHeight: 50)
-                }.buttonStyle(.borderedProminent).tint(.normalActive)
+                    Text("I'm Safe").foregroundColor(.white).frame(maxWidth: .infinity, maxHeight: 50).fontWeight(.bold)
+                }.buttonStyle(.borderedProminent).tint(.normalActiveNd)
             }
         }.padding()
             .offset(y: -20)
@@ -152,8 +162,22 @@ private struct ActiveUserDetail: View {
     BottomSheetView(request: ActivityViewModel.sampleRequests[0], role: .emergencyContact, sheetDetent: $sheetDetent, routeManager: $routeManager)
 }
 
+#Preview("Emergency Contact Dark") {
+    @Previewable @State var sheetDetent: PresentationDetent = .height(350)
+    @Previewable @State var routeManager: RouteManager = RouteManager()
+    BottomSheetView(request: ActivityViewModel.sampleRequests[0], role: .emergencyContact, sheetDetent: $sheetDetent, routeManager: $routeManager)
+        .preferredColorScheme(ColorScheme.dark)
+}
+
 #Preview("Active User") {
     @Previewable @State var sheetDetent: PresentationDetent = .height(350)
     @Previewable @State var routeManager: RouteManager = RouteManager()
     BottomSheetView(request: nil, role: .activeUser, sheetDetent: $sheetDetent, routeManager: $routeManager)
+}
+
+#Preview("Active User Dark") {
+    @Previewable @State var sheetDetent: PresentationDetent = .height(350)
+    @Previewable @State var routeManager: RouteManager = RouteManager()
+    BottomSheetView(request: nil, role: .activeUser, sheetDetent: $sheetDetent, routeManager: $routeManager)
+        .preferredColorScheme(ColorScheme.dark)
 }

@@ -44,14 +44,9 @@ struct ActivityView: View {
 private struct EmptyActivityView: View {
     var body: some View {
         VStack(spacing: 8) {
-            Circle()
-                .foregroundStyle(.gray)
-                .overlay(
-                    Image(systemName: "photo.fill")
-                        .font(.largeTitle)
-                )
-                .opacity(0.5)
-                .frame(width: 240, height: 240)
+            Image(systemName: "teddybear.fill")
+                .font(.system(size: 192))
+                .foregroundStyle(.dark)
             Text("No Active Request")
                 .font(.title.weight(.bold))
                 .foregroundStyle(.darkActive)
