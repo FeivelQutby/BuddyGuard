@@ -6,13 +6,20 @@
 //
 
 import SwiftUI
+import CoreLocation
+import FirebaseFirestore
 
+// MARK: - Emergency View
 struct EmergencyView: View {
     @State private var progress: CGFloat = 0.0
     @State private var timeElapsed: Double = 0.0
     @State private var isPressing = false
     @State private var timer: Timer?
     @State private var showMap = false
+    
+    // Replace the old @StateObject with this:
+    @State private var locationManager = LocationManager()
+    @State private var liveTrackingManager = LiveTrackingManager()
 
     var body: some View {
         
@@ -123,7 +130,7 @@ struct EmergencyView: View {
         .frame(maxWidth: .infinity)
         .padding(16)
         .fullScreenCover(isPresented: $showMap, onDismiss: { stopHolding() }) {
-            MapView(role: .activeUser)
+            MapView(role: .activeUser, liveTrackingManager: liveTrackingManager)
         }
     }
     
@@ -144,6 +151,12 @@ struct EmergencyView: View {
                 timer?.invalidate()
                 
                 showMap = true
+                print("Emergency triggered!")
+                
+                // Start the live tracking session via LiveTrackingManager
+                if let coord = locationManager.coordinate {
+                    liveTrackingManager.startSession(coordinate: coord)
+                }
             } else {
                 progress = CGFloat(timeElapsed / 3.0)
             }

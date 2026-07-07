@@ -17,6 +17,12 @@ struct ActivityRequest: Identifiable {
     let distance: String
     let coordinate: CLLocationCoordinate2D
     let state: UserState
+    
+    // MARK: - Live Tracking Fields
+    let sessionId: String
+    let destinationName: String?
+    let destinationLatitude: Double?
+    let destinationLongitude: Double?
 
     init(
         id: UUID = UUID(),
@@ -26,7 +32,11 @@ struct ActivityRequest: Identifiable {
         eta: String,
         distance: String,
         coordinate: CLLocationCoordinate2D,
-        state: UserState = .OnTheWay
+        state: UserState = .OnTheWay,
+        sessionId: String = "",
+        destinationName: String? = nil,
+        destinationLatitude: Double? = nil,
+        destinationLongitude: Double? = nil
     ) {
         self.id = id
         self.name = name
@@ -36,5 +46,9 @@ struct ActivityRequest: Identifiable {
         self.distance = distance
         self.coordinate = coordinate
         self.state = state
+        self.sessionId = sessionId
+        self.destinationName = destinationName
+        self.destinationLatitude = destinationLatitude
+        self.destinationLongitude = destinationLongitude
     }
 }

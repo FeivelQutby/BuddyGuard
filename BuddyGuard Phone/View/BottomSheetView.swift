@@ -7,23 +7,30 @@ struct BottomSheetView: View{
     let role: MapRole
     @Binding var sheetDetent: PresentationDetent
     @Binding var routeManager: RouteManager
+    /// Live status from the Firestore session listener
+    var trackedUserStatus: UserState = .OnTheWay
     var onSOS: () -> Void = {}
     var onImSafe: () -> Void = {}
+    var onImOnMyWay: () -> Void = {}
     
     var body: some View{
         if sheetDetent == .height(80){
             VStack{
-                Text("To \(routeManager.safePlaceName ?? "Unknown location")").font(.system(size: 15, weight: .semibold))
-                Text("ETA \(routeManager.eta ?? "...") (\(routeManager.distance ?? "...") km)").font(.system(size: 12))
-            }.task{
-                let info = await routeManager.getSafePlaceInfo()
-                routeManager.safePlaceName = info.name
+                Text("To \(routeManager.safePlaceName ?? "Finding location...")")
+                    .font(.system(size: 15, weight: .semibold))
+                Text("ETA \(routeManager.eta ?? "...") (\(routeManager.distance ?? "...") km)")
+                    .font(.system(size: 12))
             }
         }else if sheetDetent == .height(350){
             switch role {
             case .emergencyContact:
                 if let request {
-                    EmergencyContactDetail(request: request, routeManager: $routeManager)
+                    EmergencyContactDetail(
+                        request: request,
+                        routeManager: $routeManager,
+                        liveStatus: trackedUserStatus,
+                        onImOnMyWay: onImOnMyWay
+                    )
                 }
             case .activeUser:
                 ActiveUserDetail(routeManager: $routeManager, onSOS: onSOS, onImSafe: onImSafe)
@@ -37,6 +44,11 @@ struct BottomSheetView: View{
 private struct EmergencyContactDetail: View {
     let request: ActivityRequest
     @Binding var routeManager: RouteManager
+    /// Live status from the Firestore session listener — updates in real-time
+    var liveStatus: UserState
+    var onImOnMyWay: () -> Void
+    
+    @State private var isNavigating = false
     
     var body: some View {
         VStack(alignment: .leading, spacing: 20){
@@ -45,8 +57,8 @@ private struct EmergencyContactDetail: View {
             HStack{
                 VStack(alignment: .leading){
                     Text("\(request.name)'s status").font(.footnote)
-                    RoundedRectangle(cornerRadius: 10).fill(request.state.fillColor).stroke(request.state.strokeColor, lineWidth: 2).frame(height: 50).overlay(
-                        Text(request.state.label).font(.title3).fontWeight(.bold).foregroundColor(.black).frame(maxWidth: .infinity,alignment: .leading).padding()
+                    RoundedRectangle(cornerRadius: 10).fill(liveStatus.fillColor).stroke(liveStatus.strokeColor, lineWidth: 2).frame(height: 50).overlay(
+                        Text(liveStatus.label).font(.title3).fontWeight(.bold).foregroundColor(.black).frame(maxWidth: .infinity,alignment: .leading).padding()
                     )
                 }.frame(maxWidth: .infinity, alignment: .leading)
                 
@@ -62,26 +74,39 @@ private struct EmergencyContactDetail: View {
             
             HStack{
                 VStack(alignment: .leading){
-                    Text("\(routeManager.safePlaceName ?? "Unknown location")").font(.body).fontWeight(.bold)
-                    Text("\(routeManager.safePlaceAddress ?? "Unknown location")").font(.footnote)
+                    Text("\(routeManager.safePlaceName ?? "Finding location...")").font(.body).fontWeight(.bold)
+                    Text("\(routeManager.safePlaceAddress ?? "...")").font(.footnote)
                 }.frame(maxWidth: .infinity, alignment: .leading)
                 
                 VStack(alignment: .leading){
                     Text("ETA").font(.footnote)
                     Text("\(routeManager.eta ?? "...") (\(routeManager.distance ?? "...") km)").font(.title3).fontWeight(.bold)
                 }.frame(maxWidth: .infinity, alignment: .leading)
-            }.task{
-                let info = await routeManager.getSafePlaceInfo()
-                routeManager.safePlaceName = info.name
-                routeManager.safePlaceAddress = info.address
             }
         }.padding()
             .offset(y: -20)
+        
+        // "I'm on my way" — navigates contact to the SAFE DESTINATION, not the friend
         Button{
-            // TODO: notify request.name that the contact is on the way, once the notif layer exists.
+            guard !isNavigating else { return }
+            isNavigating = true
+            onImOnMyWay()
         }label:{
-            Text("I'm on my way").foregroundColor(.white).frame(maxWidth: .infinity, maxHeight: 50)
-        }.buttonStyle(.borderedProminent).tint(.normalActive).padding()
+            HStack(spacing: 8) {
+                if isNavigating {
+                    Image(systemName: "figure.walk")
+                    Text("En Route to Safe Place")
+                } else {
+                    Image(systemName: "car.fill")
+                    Text("I'm on my way")
+                }
+            }
+            .foregroundColor(.white)
+            .frame(maxWidth: .infinity, maxHeight: 50)
+        }
+        .buttonStyle(.borderedProminent)
+        .tint(isNavigating ? .green : .normalActive)
+        .padding()
     }
 }
 
@@ -98,19 +123,14 @@ private struct ActiveUserDetail: View {
             
             VStack(alignment: .leading){
                 Text("Destination").font(.footnote)
-                Text("\(routeManager.safePlaceName ?? "Unknown location")").font(.title3).fontWeight(.bold)
-                Text("\(routeManager.safePlaceAddress ?? "Unknown location")").font(.footnote)
+                Text("\(routeManager.safePlaceName ?? "Finding location...")").font(.title3).fontWeight(.bold)
+                Text("\(routeManager.safePlaceAddress ?? "...")").font(.footnote)
             }.frame(maxWidth: .infinity, alignment: .leading)
             
             VStack(alignment: .leading){
                 Text("ETA").font(.footnote)
                 Text("\(routeManager.eta ?? "...") (\(routeManager.distance ?? "...") km)").font(.title3).fontWeight(.bold)
             }.frame(maxWidth: .infinity, alignment: .leading)
-                .task{
-                    let info = await routeManager.getSafePlaceInfo()
-                    routeManager.safePlaceName = info.name
-                    routeManager.safePlaceAddress = info.address
-                }
             
             HStack(spacing: 12){
                 Button(action: onSOS){

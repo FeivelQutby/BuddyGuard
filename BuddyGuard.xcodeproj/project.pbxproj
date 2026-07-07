@@ -6,9 +6,18 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		CB53E23C2FF7D94000E7DDCC /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = CB53E23B2FF7D94000E7DDCC /* FirebaseAnalytics */; };
+		CB53E23E2FF7D94000E7DDCC /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = CB53E23D2FF7D94000E7DDCC /* FirebaseAuth */; };
+		CB53E2402FF7D94000E7DDCC /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = CB53E23F2FF7D94000E7DDCC /* FirebaseCore */; };
+		CB53E2422FF7D94000E7DDCC /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = CB53E2412FF7D94000E7DDCC /* FirebaseFirestore */; };
+		CB56B6CA2FFB6D7B00F3E260 /* GoogleSignIn in Frameworks */ = {isa = PBXBuildFile; productRef = CB56B6C92FFB6D7B00F3E260 /* GoogleSignIn */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
-		8E7B29642FEE1AE600E8B444 /* BuddyGuard.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BuddyGuard.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		8E7B29642FEE1AE600E8B444 /* BuddyGuard - Safety Companion.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "BuddyGuard - Safety Companion.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		8E7B297C2FEE1C4A00E8B444 /* BuddyGuard WatchOs Watch App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "BuddyGuard WatchOs Watch App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		CB56B6CB2FFB6DAA00F3E260 /* BuddyGuard-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "BuddyGuard-Info.plist"; sourceTree = "<group>"; };
 		CB6BBDE32FF768AD006ED1A1 /* BuddyGuard.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = BuddyGuard.entitlements; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -30,6 +39,11 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CB56B6CA2FFB6D7B00F3E260 /* GoogleSignIn in Frameworks */,
+				CB53E23C2FF7D94000E7DDCC /* FirebaseAnalytics in Frameworks */,
+				CB53E2422FF7D94000E7DDCC /* FirebaseFirestore in Frameworks */,
+				CB53E2402FF7D94000E7DDCC /* FirebaseCore in Frameworks */,
+				CB53E23E2FF7D94000E7DDCC /* FirebaseAuth in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -46,9 +60,11 @@
 		8E7B295B2FEE1AE600E8B444 = {
 			isa = PBXGroup;
 			children = (
+				CB56B6CB2FFB6DAA00F3E260 /* BuddyGuard-Info.plist */,
 				CB6BBDE32FF768AD006ED1A1 /* BuddyGuard.entitlements */,
 				8E7B29662FEE1AE600E8B444 /* BuddyGuard Phone */,
 				8E7B297D2FEE1C4A00E8B444 /* BuddyGuard Watch */,
+				CB53E2432FF7D97300E7DDCC /* Frameworks */,
 				8E7B29652FEE1AE600E8B444 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -56,10 +72,17 @@
 		8E7B29652FEE1AE600E8B444 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				8E7B29642FEE1AE600E8B444 /* BuddyGuard.app */,
+				8E7B29642FEE1AE600E8B444 /* BuddyGuard - Safety Companion.app */,
 				8E7B297C2FEE1C4A00E8B444 /* BuddyGuard WatchOs Watch App.app */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		CB53E2432FF7D97300E7DDCC /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -82,9 +105,14 @@
 			);
 			name = BuddyGuard;
 			packageProductDependencies = (
+				CB53E23B2FF7D94000E7DDCC /* FirebaseAnalytics */,
+				CB53E23D2FF7D94000E7DDCC /* FirebaseAuth */,
+				CB53E23F2FF7D94000E7DDCC /* FirebaseCore */,
+				CB53E2412FF7D94000E7DDCC /* FirebaseFirestore */,
+				CB56B6C92FFB6D7B00F3E260 /* GoogleSignIn */,
 			);
 			productName = BuddyGuard;
-			productReference = 8E7B29642FEE1AE600E8B444 /* BuddyGuard.app */;
+			productReference = 8E7B29642FEE1AE600E8B444 /* BuddyGuard - Safety Companion.app */;
 			productType = "com.apple.product-type.application";
 		};
 		8E7B297B2FEE1C4A00E8B444 /* BuddyGuard WatchOs Watch App */ = {
@@ -136,6 +164,10 @@
 			);
 			mainGroup = 8E7B295B2FEE1AE600E8B444;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				CB53E23A2FF7D94000E7DDCC /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+				CB56B6C82FFB6D7B00F3E260 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 8E7B29652FEE1AE600E8B444 /* Products */;
 			projectDirPath = "";
@@ -312,12 +344,14 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = YES;
-				DEVELOPMENT_TEAM = 3GQRS52F9C;
+				DEVELOPMENT_TEAM = HKS2XN3KMY;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "BuddyGuard-Info.plist";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "BuddyGuard needs your location to send for help during an emergency.";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
@@ -333,8 +367,8 @@
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 26.3;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.feivelqutby.BuddyGuard2;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_BUNDLE_IDENTIFIER = com.george.BuddyGuard;
+				PRODUCT_NAME = "BuddyGuard - Safety Companion";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				REGISTER_APP_GROUPS = YES;
 				SDKROOT = auto;
@@ -361,12 +395,14 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = YES;
-				DEVELOPMENT_TEAM = 3GQRS52F9C;
+				DEVELOPMENT_TEAM = HKS2XN3KMY;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "BuddyGuard-Info.plist";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "BuddyGuard needs your location to send for help during an emergency.";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
@@ -382,8 +418,8 @@
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 26.3;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.feivelqutby.BuddyGuard2;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_BUNDLE_IDENTIFIER = com.george.BuddyGuard;
+				PRODUCT_NAME = "BuddyGuard - Safety Companion";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				REGISTER_APP_GROUPS = YES;
 				SDKROOT = auto;
@@ -498,6 +534,53 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		CB53E23A2FF7D94000E7DDCC /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 12.15.0;
+			};
+		};
+		CB56B6C82FFB6D7B00F3E260 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/google/GoogleSignIn-iOS";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 9.2.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		CB53E23B2FF7D94000E7DDCC /* FirebaseAnalytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = CB53E23A2FF7D94000E7DDCC /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAnalytics;
+		};
+		CB53E23D2FF7D94000E7DDCC /* FirebaseAuth */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = CB53E23A2FF7D94000E7DDCC /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAuth;
+		};
+		CB53E23F2FF7D94000E7DDCC /* FirebaseCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = CB53E23A2FF7D94000E7DDCC /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseCore;
+		};
+		CB53E2412FF7D94000E7DDCC /* FirebaseFirestore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = CB53E23A2FF7D94000E7DDCC /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseFirestore;
+		};
+		CB56B6C92FFB6D7B00F3E260 /* GoogleSignIn */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = CB56B6C82FFB6D7B00F3E260 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */;
+			productName = GoogleSignIn;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 8E7B295C2FEE1AE600E8B444 /* Project object */;
 }
