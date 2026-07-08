@@ -60,6 +60,7 @@ private struct EmergencyContactDetail: View {
                     RoundedRectangle(cornerRadius: 1000).fill(liveStatus.fillColor).stroke(liveStatus.strokeColor, lineWidth: 2).frame(height: 50).overlay(
                         Text(liveStatus.label).font(.title3).fontWeight(.bold).foregroundColor(.black).frame(maxWidth: .infinity,alignment: .leading).padding()
                     )
+                    .offset(x: -10, y: 0)
                 }.frame(maxWidth: .infinity, alignment: .leading)
                 
                 VStack(alignment: .leading){
@@ -72,7 +73,7 @@ private struct EmergencyContactDetail: View {
                 routeManager.sourcePlaceName = await routeManager.getSourcePlaceName(from: request.coordinate)
             }
             
-            VStack(spacing: 8){
+            VStack(spacing: 4){
                 VStack(alignment: .leading){
                     Text("From").font(.footnote)
                         .foregroundStyle(.darkActive)
@@ -84,8 +85,11 @@ private struct EmergencyContactDetail: View {
                 }.frame(maxWidth: .infinity, alignment: .leading)
                 
                 VStack(alignment: .leading){
-                    Text("\(routeManager.safePlaceName ?? "To")")
-                        .font(.footnote)
+                    Text("To").font(.footnote)
+                        .foregroundStyle(.darkActive)
+                    Text("\(routeManager.safePlaceName ?? "Finding Location...")")
+                        .font(.title3)
+                        .fontWeight(.bold)
                         .foregroundStyle(.darkActive)
                     Text("\(routeManager.safePlaceAddress ?? "...")")
                         .font(.footnote)
@@ -93,7 +97,7 @@ private struct EmergencyContactDetail: View {
                 }.frame(maxWidth: .infinity, alignment: .leading)
             }
         }.padding()
-            .offset(y: -20)
+            .offset(x: 0, y: 25)
         
         // "I'm on my way" — navigates contact to the SAFE DESTINATION, not the friend
         Button{
@@ -161,7 +165,9 @@ private struct ActiveUserDetail: View {
                     Text("I'm Safe").foregroundColor(.white).frame(maxWidth: .infinity, maxHeight: 50).fontWeight(.bold)
                 }.buttonStyle(.borderedProminent).tint(.normalActiveNd)
             }
+            .offset(y: 60)
         }.padding()
+            .offset(x: 0, y: -55)
     }
     
 }

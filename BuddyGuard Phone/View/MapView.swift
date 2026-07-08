@@ -57,8 +57,11 @@ struct MapView: View {
     // MARK: - Emergency contact: "I'm on my way" navigation state
     @State private var contactNavigating: Bool = false
 
-    // Toast
+    // Toasts
     @State private var showNotifiedToast = false
+    @State private var showSOSToast = false
+    @State private var showImSafeToast = false
+    @State private var showContactOnWayToast = false
     
     init(request: ActivityRequest? = nil, role: MapRole = .emergencyContact, liveTrackingManager: LiveTrackingManager? = nil) {
         self.request = request
@@ -183,11 +186,13 @@ struct MapView: View {
                     onSOS: {
                         myStatus = .Urgent
                         liveTrackingManager?.updateStatus(.Urgent)
+                        showSOSToast = true
                     },
                     onImSafe: {
                         myStatus = .Arrived
                         liveTrackingManager?.updateStatus(.Arrived)
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { dismiss() }
+                        showImSafeToast = true
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) { dismiss() }
                     },
                     onImOnMyWay: {
                         handleImOnMyWay()
@@ -208,8 +213,32 @@ struct MapView: View {
                 BottomFloatingToolBar().padding(.trailing, 15)
             }
             
-            // MARK: - Notified Toast
+            // MARK: - Back Button (Emergency Contact only)
+            .overlay(alignment: .topLeading) {
+                if role == .emergencyContact {
+                    Button(action: { dismiss() }) {
+                        Image(systemName: "chevron.backward")
+                            .frame(width: 20, height: 20)
+                            .foregroundStyle(.gray)
+                    }
+                    .buttonStyle(.glass)
+                    .buttonBorderShape(.circle)
+                    .controlSize(.large)
+                    .padding(10)
+                }
+            }
+
+            // MARK: - Toasts
             .toast(isPresented: $showNotifiedToast, icon: "checkmark.circle.fill", message: "Emergency contacts have been notified", duration: 3.0)
+            .toast(isPresented: $showSOSToast, icon: "exclamationmark.triangle.fill", message: "SOS alert sent to your contacts", tint: .red, duration: 3.0)
+            .toast(isPresented: $showImSafeToast, icon: "hand.thumbsup.fill", message: "You're safe! Ending session...", duration: 2.0)
+            .toast(isPresented: $showContactOnWayToast, icon: "figure.walk", message: "A contact is on the way!", tint: .green, duration: 3.0)
+            .onChange(of: watchingContactCoordinates.count) { oldCount, newCount in
+                if newCount > oldCount {
+                    HapticManager.notification(.success)
+                    showContactOnWayToast = true
+                }
+            }
         }
     }
     
