@@ -15,13 +15,12 @@ struct ProfileView: View {
     // MARK: - Presentation States
     @State private var showAddContactSheet = false
     @State private var showInboxSheet = false
-    @State private var showEditNameSheet = false
     @State private var contactManager = EmergencyContactManager()
-
+    
     init(viewModel: ProfileViewModel = ProfileViewModel()) {
         _viewModel = State(initialValue: viewModel)
     }
-
+    
     var body: some View {
         @Bindable var viewModel = viewModel
         
@@ -30,34 +29,25 @@ struct ProfileView: View {
                 
                 // MARK: - Avatar
                 Circle()
-                    .foregroundStyle(.gray)
+                    .foregroundStyle(.lightD2)
                     .opacity(0.5)
                     .overlay(
                         Text(authManager.displayName.prefix(1).uppercased())
                             .font(.system(size: 52, weight: .bold))
-                            .foregroundStyle(.white)
+                            .foregroundStyle(.darkActive)
                     )
                     .frame(width: 110, height: 110)
-
+                
                 // MARK: - Name + Email from Firebase Auth
                 VStack(spacing: 4) {
-                    HStack(spacing: 6) {
-                        Text(authManager.displayName)
-                            .font(.title3.weight(.semibold))
-                            .foregroundStyle(.darkActive)
-                        Button {
-                            showEditNameSheet = true
-                        } label: {
-                            Image(systemName: "pencil.circle.fill")
-                                .font(.body)
-                                .foregroundStyle(.secondary)
-                        }
-                    }
+                    Text(authManager.displayName)
+                        .font(.title3.weight(.semibold))
+                        .foregroundStyle(.darkActive)
                     Text(authManager.email)
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
                 }
-
+                
                 Picker("Profile Section", selection: $viewModel.selectedSegment) {
                     ForEach(ProfileSegment.allCases, id: \.self) { segment in
                         Label(segment.title, systemImage: segment.systemImage)
@@ -68,7 +58,7 @@ struct ProfileView: View {
                 .pickerStyle(.segmented)
                 .tint(.dark)
                 .padding(.top, 8)
-
+                
                 HStack(alignment: .firstTextBaseline) {
                     Text(viewModel.sectionTitle)
                         .font(.title.weight(.bold))
@@ -97,7 +87,7 @@ struct ProfileView: View {
                     }
                 }
                 .padding(.top, 20)
-
+                
                 switch viewModel.selectedSegment {
                 case .profile:
                     ProfileInfoSection(authManager: authManager)
@@ -109,12 +99,12 @@ struct ProfileView: View {
                     )
                     .padding(.top, 12)
                 }
-
+                
                 Spacer(minLength: 0)
             }
             .padding(16)
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-
+            
             // MARK: - Bottom Action Buttons
             if viewModel.selectedSegment == .contact {
                 Button {
@@ -147,11 +137,15 @@ struct ProfileView: View {
                 .padding(.bottom, 28)
             }
         }
-        .sheet(isPresented: $showAddContactSheet) { AddContactSheet() }
-        .sheet(isPresented: $showInboxSheet) { ContactInboxView() }
-        .sheet(isPresented: $showEditNameSheet) {
-            EditDisplayNameSheet(authManager: authManager)
+        .sheet(isPresented: $showAddContactSheet) {
+            AddContactSheet()
+                .presentationDetents([.medium,.large])
         }
+        .sheet(isPresented: $showInboxSheet) {
+            ContactInboxCard()
+                .presentationDetents([.medium,.medium])
+        }
+
         .onAppear {
             contactManager.startListeningToInbox()
         }
@@ -167,7 +161,7 @@ private struct ProfileInfoSection: View {
         VStack(spacing: 0) {
             Divider().background(Color(.systemGray3))
             
-            ProfileInfoRow(icon: "person.fill", title: "Display Name", value: authManager.displayName)
+            ProfileInfoRow(icon: "person.fill", title: "Display Name", value: authManager.displayName, showChevron: true)
             Divider().background(Color(.systemGray3))
             ProfileInfoRow(icon: "envelope.fill", title: "Email", value: authManager.email)
             Divider().background(Color(.systemGray3))
@@ -184,17 +178,22 @@ private struct ProfileInfoRow: View {
     let icon: String
     let title: String
     let value: String
-    
+    var showChevron: Bool = false
+    @State private var showEditNameSheet = false
+    @Environment(AuthManager.self) private var authManager
+
     var body: some View {
         HStack(spacing: 16) {
-            Circle()
-                .fill(.lightD2)
-                .frame(width: 44, height: 44)
-                .overlay(
-                    Image(systemName: icon)
-                        .font(.body.weight(.semibold))
-                        .foregroundStyle(.darkActive)
-                )
+            HStack{
+                Circle()
+                    .fill(.lightD2)
+                    .frame(width: 44, height: 44)
+                    .overlay(
+                        Image(systemName: icon)
+                            .font(.body.weight(.semibold))
+                            .foregroundStyle(.darkActive)
+                    )
+            }
             VStack(alignment: .leading, spacing: 3) {
                 Text(title)
                     .font(.caption)
@@ -204,6 +203,19 @@ private struct ProfileInfoRow: View {
                     .foregroundStyle(.darkActive)
             }
             Spacer()
+            if showChevron {
+                Button {
+                    showEditNameSheet = true
+                } label: {
+                    Image(systemName: "chevron.right")
+                        .font(.body)
+                        .foregroundStyle(.white)
+                }
+            }
+        }
+        .sheet(isPresented: $showEditNameSheet) {
+            EditDisplayNameSheet(authManager: authManager)
+                .presentationDetents([.medium,.medium])
         }
         .padding(.vertical, 10)
     }
@@ -224,7 +236,7 @@ private struct EditDisplayNameSheet: View {
                 VStack(alignment: .leading, spacing: 10) {
                     Text("Display Name")
                         .font(.subheadline.weight(.semibold))
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(.darkActive)
                     TextField("Your name", text: $newName)
                         .padding()
                         .background(Color(.systemGray6))
@@ -258,6 +270,8 @@ private struct EditDisplayNameSheet: View {
                         if isSaving { ProgressView().tint(.white).padding(.trailing, 6) }
                         Text("Save")
                             .font(.headline)
+                            .padding(20)
+                            .background(.darkActiveNd)
                     }
                     .foregroundStyle(.white)
                     .frame(maxWidth: .infinity)
@@ -317,7 +331,7 @@ private struct EmergencyContactRow: View {
     let contact: EmergencyContact
     let contactManager: EmergencyContactManager
     @State private var showPermissionSheet = false
-
+    
     var body: some View {
         HStack(spacing: 16) {
             ZStack {

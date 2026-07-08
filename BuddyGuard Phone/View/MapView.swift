@@ -56,6 +56,9 @@ struct MapView: View {
     
     // MARK: - Emergency contact: "I'm on my way" navigation state
     @State private var contactNavigating: Bool = false
+
+    // Toast
+    @State private var showNotifiedToast = false
     
     init(request: ActivityRequest? = nil, role: MapRole = .emergencyContact, liveTrackingManager: LiveTrackingManager? = nil) {
         self.request = request
@@ -137,6 +140,11 @@ struct MapView: View {
             .onAppear {
                 locationManager.requestLocationPermission()
                 setupRole()
+                if role == .activeUser {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) {
+                        showNotifiedToast = true
+                    }
+                }
             }
             .onDisappear {
                 cleanUp()
@@ -166,7 +174,7 @@ struct MapView: View {
                 }
             }
             .sheet(isPresented: $showSheet) {
-                BottomSheetView(
+                BottomSheetCard(
                     request: request,
                     role: role,
                     sheetDetent: $sheetDetent,
@@ -200,27 +208,8 @@ struct MapView: View {
                 BottomFloatingToolBar().padding(.trailing, 15)
             }
             
-            // MARK: - Top Navigation Bar
-            VStack {
-                HStack(alignment: .top) {
-                    Button(action: { dismiss() }) {
-                        Image(systemName: "chevron.backward").frame(width: 20, height: 20)
-                    }
-                    .buttonStyle(.glass)
-                    .buttonBorderShape(.circle)
-                    .controlSize(.large)
-                    Spacer()
-                }
-                .padding(10)
-                .overlay(alignment: .center) {
-                    VStack {
-                        Text("Live Tracking").font(.system(size: 15, weight: .semibold))
-                        Text("Started at \(Date(), format: .dateTime.hour().minute())")
-                            .foregroundColor(Color(red: 114/255, green: 114/255, blue: 114/255))
-                    }
-                }
-                Spacer()
-            }
+            // MARK: - Notified Toast
+            .toast(isPresented: $showNotifiedToast, icon: "checkmark.circle.fill", message: "Emergency contacts have been notified", duration: 3.0)
         }
     }
     

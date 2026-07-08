@@ -31,9 +31,10 @@ struct LoginView: View {
                     .font(.body.italic())
                     .foregroundColor(.secondary)
                 
-                Image(systemName: "teddybear.fill")
-                    .font(.system(size: 192))
-                    .foregroundStyle(Color("dark", bundle: nil))
+                Image("mascot")
+                    .background(
+                        Image("effect")
+                    )
             }
             
             Spacer()

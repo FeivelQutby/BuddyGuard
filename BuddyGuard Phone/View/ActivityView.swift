@@ -9,6 +9,8 @@ import SwiftUI
 
 struct ActivityView: View {
     @State private var viewModel: ActivityViewModel
+    @State private var showAlertToast = false
+    @State private var alertName = ""
 
     init(viewModel: ActivityViewModel = ActivityViewModel()) {
         _viewModel = State(initialValue: viewModel)
@@ -38,37 +40,46 @@ struct ActivityView: View {
         .fullScreenCover(item: $viewModel.activeRequest) { request in
             MapView(request: request, role: .emergencyContact)
         }
+        .onChange(of: viewModel.requests.count) { oldCount, newCount in
+            if newCount > oldCount, let newest = viewModel.requests.last {
+                HapticManager.notification(.warning)
+                alertName = newest.name
+                showAlertToast = true
+            }
+        }
+        .toast(isPresented: $showAlertToast, icon: "exclamationmark.triangle.fill", message: "\(alertName) needs help! Tap to view location.", tint: .red, duration: 4.0)
     }
 }
 
 private struct EmptyActivityView: View {
     var body: some View {
         VStack(spacing: 8) {
-            Image(systemName: "teddybear.fill")
-                .font(.system(size: 192))
-                .foregroundStyle(.dark)
+            Image("mascot")
+                .background(
+                    Image("effect")
+                )
             Text("No Active Request")
                 .font(.title.weight(.bold))
                 .foregroundStyle(.darkActive)
             Text("There's no active request.")
                 .foregroundStyle(.darkHover)
-                .font(.system(.caption))
+                .font(.system(.body))
             Divider()
                 .opacity(0)
-                .frame(height:20)
+                .frame(height:100)
             VStack(alignment: .leading, spacing: 8) {
                 Text("How it works?")
-                    .font(.body.weight(Font.Weight.semibold))
-                    .foregroundStyle(.darkActiveNd)
+                    .font(.title3.weight(Font.Weight.semibold))
+                    .foregroundStyle(.darkActive)
                 Text("• Your friend or family member will send you a help request when they need you.\n• You will receive the notification and real-time location of them.")
-                    .font(Font.system(.caption))
-                    .foregroundStyle(.darkActiveNd)
+                    .font(Font.system(.footnote))
+                    .foregroundStyle(.darkActive)
             }
             .padding(15)
             .frame(maxWidth: .infinity, alignment: .leading)
             .background(
                 RoundedRectangle(cornerRadius: 8)
-                    .fill(.lightActive) // nd
+                    .fill(.lightD)
             )
         }
         .padding(16)
