@@ -213,9 +213,9 @@ struct DirectionView: View {
         }
     }
     
-    @ViewBuilder{
-        
-    }
+//    @ViewBuilder{
+//        
+//    }
 }
 
 #Preview {
