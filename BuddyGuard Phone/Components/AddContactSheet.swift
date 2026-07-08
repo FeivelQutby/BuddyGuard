@@ -82,7 +82,7 @@ struct AddContactSheet: View {
                     .foregroundStyle(.white)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 16)
-                    .background(email.isEmpty ? Color.gray : Color("normalActive", bundle: nil))
+                    .background(email.isEmpty ? Color.gray : Color("normalActive")) // ini normal active masih blom bisa
                     .clipShape(Capsule())
                 }
                 .disabled(email.isEmpty)
@@ -101,4 +101,9 @@ struct AddContactSheet: View {
 
 #Preview {
     AddContactSheet()
+}
+
+#Preview {
+    AddContactSheet()
+        .preferredColorScheme(.dark)
 }

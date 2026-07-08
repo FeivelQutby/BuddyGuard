@@ -1,5 +1,5 @@
 //
-//  ContactInboxView.swift
+//  ContactInboxCard.swift
 //  BuddyGuard
 //
 //  Created by George Maximillian Theodore on 06/07/26.
@@ -8,7 +8,7 @@
 
 import SwiftUI
 
-struct ContactInboxView: View {
+struct ContactInboxCard: View {
     @State private var contactManager = EmergencyContactManager()
     
     var body: some View {
@@ -30,6 +30,13 @@ struct ContactInboxView: View {
                 }
             }
             .navigationTitle("Invitations")
+            .navigationBarTitleDisplayMode(.inline)
+//            .toolbar {
+//                ToolbarItem(placement: .topBarTrailing) {
+//                    Button("Close") { dismiss() }
+//                }
+//            }
+
             .onAppear {
                 contactManager.startListeningToInbox()
             }
@@ -101,12 +108,17 @@ private struct InboxRequestRow: View {
             .padding(.top, 4)
         }
         .padding(16)
-        .background(Color("lightD", bundle: nil))
+        .background(.lightD)
         .cornerRadius(16)
         .shadow(color: Color.black.opacity(0.05), radius: 5, x: 0, y: 2)
     }
 }
 
 #Preview {
-    ContactInboxView()
+    ContactInboxCard()
+}
+
+#Preview {
+    ContactInboxCard()
+        .preferredColorScheme(.dark)
 }

@@ -56,6 +56,12 @@ struct MapView: View {
     
     // MARK: - Emergency contact: "I'm on my way" navigation state
     @State private var contactNavigating: Bool = false
+
+    // Toasts
+    @State private var showNotifiedToast = false
+    @State private var showSOSToast = false
+    @State private var showImSafeToast = false
+    @State private var showContactOnWayToast = false
     
     init(request: ActivityRequest? = nil, role: MapRole = .emergencyContact, liveTrackingManager: LiveTrackingManager? = nil) {
         self.request = request
@@ -137,6 +143,11 @@ struct MapView: View {
             .onAppear {
                 locationManager.requestLocationPermission()
                 setupRole()
+                if role == .activeUser {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) {
+                        showNotifiedToast = true
+                    }
+                }
             }
             .onDisappear {
                 cleanUp()
@@ -166,7 +177,7 @@ struct MapView: View {
                 }
             }
             .sheet(isPresented: $showSheet) {
-                BottomSheetView(
+                BottomSheetCard(
                     request: request,
                     role: role,
                     sheetDetent: $sheetDetent,
@@ -175,11 +186,13 @@ struct MapView: View {
                     onSOS: {
                         myStatus = .Urgent
                         liveTrackingManager?.updateStatus(.Urgent)
+                        showSOSToast = true
                     },
                     onImSafe: {
                         myStatus = .Arrived
                         liveTrackingManager?.updateStatus(.Arrived)
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { dismiss() }
+                        showImSafeToast = true
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) { dismiss() }
                     },
                     onImOnMyWay: {
                         handleImOnMyWay()
@@ -200,26 +213,31 @@ struct MapView: View {
                 BottomFloatingToolBar().padding(.trailing, 15)
             }
             
-            // MARK: - Top Navigation Bar
-            VStack {
-                HStack(alignment: .top) {
+            // MARK: - Back Button (Emergency Contact only)
+            .overlay(alignment: .topLeading) {
+                if role == .emergencyContact {
                     Button(action: { dismiss() }) {
-                        Image(systemName: "chevron.backward").frame(width: 20, height: 20)
+                        Image(systemName: "chevron.backward")
+                            .frame(width: 20, height: 20)
+                            .foregroundStyle(.gray)
                     }
                     .buttonStyle(.glass)
                     .buttonBorderShape(.circle)
                     .controlSize(.large)
-                    Spacer()
+                    .padding(10)
                 }
-                .padding(10)
-                .overlay(alignment: .center) {
-                    VStack {
-                        Text("Live Tracking").font(.system(size: 15, weight: .semibold))
-                        Text("Started at \(Date(), format: .dateTime.hour().minute())")
-                            .foregroundColor(Color(red: 114/255, green: 114/255, blue: 114/255))
-                    }
+            }
+
+            // MARK: - Toasts
+            .toast(isPresented: $showNotifiedToast, icon: "checkmark.circle.fill", message: "Emergency contacts have been notified", duration: 3.0)
+            .toast(isPresented: $showSOSToast, icon: "exclamationmark.triangle.fill", message: "SOS alert sent to your contacts", tint: .red, duration: 3.0)
+            .toast(isPresented: $showImSafeToast, icon: "hand.thumbsup.fill", message: "You're safe! Ending session...", duration: 2.0)
+            .toast(isPresented: $showContactOnWayToast, icon: "figure.walk", message: "A contact is on the way!", tint: .green, duration: 3.0)
+            .onChange(of: watchingContactCoordinates.count) { oldCount, newCount in
+                if newCount > oldCount {
+                    HapticManager.notification(.success)
+                    showContactOnWayToast = true
                 }
-                Spacer()
             }
         }
     }
@@ -534,7 +552,7 @@ struct MapView: View {
         .controlSize(.large)
         .offset(y: -sheetHeight)
         .animation(.interpolatingSpring(duration: animationDuration, bounce: 0, initialVelocity: 0), value: sheetHeight)
-        .tint(Color.normalActive)
+        .tint(.normalActiveNd)
     }
 }
 
@@ -542,8 +560,18 @@ struct MapView: View {
     MapView(request: ActivityViewModel.sampleRequests[0], role: .emergencyContact)
 }
 
+#Preview("Emergency Contact Dark") {
+    MapView(request: ActivityViewModel.sampleRequests[0], role: .emergencyContact)
+        .preferredColorScheme(.dark)
+}
+
 #Preview("Active User") {
     MapView(role: .activeUser)
+}
+
+#Preview("Active User Dark") {
+    MapView(role: .activeUser)
+        .preferredColorScheme(.dark)
 }
 
 extension CLLocation {

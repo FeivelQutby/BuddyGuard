@@ -16,12 +16,12 @@ struct ActivityCard: View {
         VStack(alignment: .leading, spacing: 10) {
             HStack(spacing: 12) {
                 Circle()
-                    .fill(.white)
+                    .fill(.lightD3)
                     .frame(width: 52, height: 52)
                     .overlay(
                         Image(systemName: "photo.fill")
                             .font(.caption)
-                            .foregroundStyle(.gray)
+                            .foregroundStyle(.darkActive)
                     )
 
                 VStack(alignment: .leading, spacing: 2) {
@@ -48,11 +48,10 @@ struct ActivityCard: View {
             .mapControlVisibility(.hidden)
 
             HStack(spacing: 8) {
-                Text(request.route)
+
+                Text("ETA from you \(request.eta) (\(request.distance))")
                     .lineLimit(1)
-                Spacer(minLength: 8)
-                Text("\(request.eta) (\(request.distance))")
-                    .lineLimit(1)
+                Spacer()
             }
             .font(.caption)
             .foregroundStyle(.darkActive)

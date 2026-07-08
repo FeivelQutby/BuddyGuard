@@ -16,8 +16,11 @@ struct EmergencyView: View {
     @State private var isPressing = false
     @State private var timer: Timer?
     @State private var showMap = false
-    
-    // Replace the old @StateObject with this:
+    @State private var lastTickSecond: Int = 0
+
+    @State private var showCancelledToast = false
+    @State private var showEndedToast = false
+
     @State private var locationManager = LocationManager()
     @State private var liveTrackingManager = LiveTrackingManager()
 
@@ -25,54 +28,36 @@ struct EmergencyView: View {
         
         VStack (spacing: 64) {
             
-            // MARK: - Header
-            VStack (alignment: .leading) {
-                Text("Good Evening, Maya!👋")
-                    .font(.title.bold())
-                    .foregroundStyle(.darkActive)
-                Text("Stay safe, wherever you go!")
-                    .font(.footnote)
-                    .foregroundStyle(.darkActive)
-                Text("**BuddyGuard** is here to help you!")
-                    .font(.footnote)
-                    .foregroundStyle(.darkActive)
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .opacity(isPressing ? 0.0 : 1.0)
-            .animation(.easeInOut(duration: 0.2), value: isPressing)
+            Divider().opacity(0)
             
             VStack {
                 // MARK: - Tooltip
                 VStack(spacing: 0) {
-                    Text("**Hold me** for 3 seconds to activate\nemergency mode")
-                        .font(.footnote)
+                    Text("**Press & Hold me** for 3s to \nactivate navigation mode")
+                        .font(.body)
                         .multilineTextAlignment(.center)
-                        .foregroundStyle(.darkActive)
+                        .foregroundStyle(.darkActiveNd)
                         .fixedSize(horizontal: false, vertical: true)
                         .padding(10)
-                        .background(.lightD)
+                        .background(.light)
                         .cornerRadius(16)
                     
                     Image(systemName: "arrowtriangle.down.fill")
-                        .foregroundStyle(.lightD)
+                        .foregroundStyle(.light)
                         .font(.largeTitle)
+                        .offset(y: -10)
                 }
                 
                 // MARK: - Animated Interactive Button
-                Image(systemName: "teddybear.fill")
-                    .font(.system(size: 192))
+                Image("mascot")
+                    .frame(width: 250, height: 250)
                     .foregroundStyle(.dark)
                     .padding(24)
                     .overlay(
-                        ZStack {
-                            Circle()
-                                .stroke(.lightD, lineWidth: 20)
-                            
-                            Circle()
-                                .trim(from: 0.0, to: progress)
-                                .stroke(.darkActive, style: StrokeStyle(lineWidth: 20, lineCap: .round))
-                                .rotationEffect(.degrees(-90))
-                        }
+                        Circle()
+                            .trim(from: 0.0, to: progress)
+                            .stroke(.darkActive, style: StrokeStyle(lineWidth: 20, lineCap: .round))
+                            .rotationEffect(.degrees(-90))
                     )
                     .contentShape(Circle())
                     .gesture(
@@ -83,6 +68,10 @@ struct EmergencyView: View {
                             .onEnded { _ in
                                 stopHolding()
                             }
+                        
+                    )
+                    .background(
+                        Image("effect")
                     )
                 
                 // MARK: - Dynamic Timer Display
@@ -102,36 +91,19 @@ struct EmergencyView: View {
             }
             .animation(.easeInOut(duration: 0.25), value: isPressing)
             
-            // MARK: - Footer
-            HStack (spacing: 10) {
-                Image(systemName: "headphones")
-                    .font(.title2)
-                    .foregroundStyle(.white)
-                    .padding(11)
-                    .background(.normalActiveNd)
-                    .cornerRadius(.infinity)
-                
-                VStack (alignment: .leading) {
-                    Text("Please use earphones!")
-                        .font(.body.bold())
-                        .foregroundStyle(.darkActive)
-                    Text("For navigation and emergency call when needed")
-                        .font(.caption)
-                        .foregroundStyle(.darkActive)
-                }
-            }
-            .frame(maxWidth: .infinity)
-            .padding(16)
-            .background(.lightD)
-            .cornerRadius(16)
-            .opacity(isPressing ? 0.0 : 1.0)
-            .animation(.easeInOut(duration: 0.2), value: isPressing)
+            Divider().opacity(0)
         }
         .frame(maxWidth: .infinity)
         .padding(16)
-        .fullScreenCover(isPresented: $showMap, onDismiss: { stopHolding() }) {
+        .fullScreenCover(isPresented: $showMap, onDismiss: {
+            stopHolding()
+            HapticManager.notification(.success)
+            showEndedToast = true
+        }) {
             MapView(role: .activeUser, liveTrackingManager: liveTrackingManager)
         }
+        .toast(isPresented: $showCancelledToast, icon: "xmark.circle.fill", message: "Emergency cancelled", tint: .secondary)
+        .toast(isPresented: $showEndedToast, icon: "shield.checkmark.fill", message: "Emergency session ended. You're safe.", duration: 3.0)
     }
     
     // MARK: - Animation Control Logic
@@ -141,19 +113,25 @@ struct EmergencyView: View {
         }
         progress = 0.0
         timeElapsed = 0.0
-        
+        lastTickSecond = 0
+
         timer = Timer.scheduledTimer(withTimeInterval: 0.01, repeats: true) { _ in
             timeElapsed += 0.01
-            
+
+            let currentSecond = Int(timeElapsed)
+            if currentSecond > lastTickSecond && currentSecond < 3 {
+                lastTickSecond = currentSecond
+                HapticManager.impact(.light)
+            }
+
             if timeElapsed >= 3.0 {
                 timeElapsed = 3.0
                 progress = 1.0
                 timer?.invalidate()
-                
+
+                HapticManager.notification(.success)
                 showMap = true
-                print("Emergency triggered!")
-                
-                // Start the live tracking session via LiveTrackingManager
+
                 if let coord = locationManager.coordinate {
                     liveTrackingManager.startSession(coordinate: coord)
                 }
@@ -164,9 +142,16 @@ struct EmergencyView: View {
     }
     
     private func stopHolding() {
+        let wasCancelled = isPressing && timeElapsed < 3.0 && timeElapsed > 0.3
+
         timer?.invalidate()
         timer = nil
-        
+
+        if wasCancelled {
+            HapticManager.impact(.soft)
+            showCancelledToast = true
+        }
+
         withAnimation(.easeInOut(duration: 0.25)) {
             isPressing = false
             progress = 0.0
