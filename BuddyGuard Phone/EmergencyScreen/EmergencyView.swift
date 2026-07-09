@@ -140,15 +140,15 @@ struct EmergencyView: View {
                 // Fire emergency start notification to all alertable contacts
                 let trackingManager = liveTrackingManager
                 Task {
-                    let contactManager = EmergencyContactManager()
+                    let contactManager = await EmergencyContactManager()
                     let tokens = await contactManager.fetchFCMTokensForAlertableContacts()
                     guard !tokens.isEmpty else {
                         print("ℹ️ No alertable contacts with FCM tokens found.")
                         return
                     }
                     let senderName = Auth.auth().currentUser?.displayName ?? "Your Friend"
-                    let alertId = trackingManager.sessionId ?? UUID().uuidString
-                    trackingManager.triggerEmergencyAlert(
+                    let alertId = await trackingManager.sessionId ?? UUID().uuidString
+                    await trackingManager.triggerEmergencyAlert(
                         alertId: alertId,
                         senderName: senderName,
                         friendTokens: tokens,
