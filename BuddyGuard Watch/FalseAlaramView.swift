@@ -25,6 +25,7 @@ struct FalseAlaramView: View {
                 
                 Button{
                     isSOSPresented.toggle()
+                    WatchConnector.shared.sendUpdateStatus(.Urgent)
                 }label: {
                     Text("SOS")
                 }.tint(Color.red)

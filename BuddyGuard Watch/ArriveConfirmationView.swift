@@ -21,6 +21,7 @@ struct ArriveConfirmationView: View {
                     Button{
                         isYesArrived.toggle()
                         showDirection.toggle()
+                        WatchConnector.shared.sendUpdateStatus(.Arrived)
                     }label:{
                         Text("Yes")
                     }
@@ -28,6 +29,7 @@ struct ArriveConfirmationView: View {
                     Button{
                         isNoArrived.toggle()
                         showArriveConfirmation.toggle()
+                        WatchConnector.shared.sendUpdateStatus(.OnTheWay)
                     }label: {
                         Text("No")
                     }
@@ -35,7 +37,7 @@ struct ArriveConfirmationView: View {
                 .frame(width: 180)
                 
                 Button{
-                    
+                    WatchConnector.shared.sendUpdateStatus(.Urgent)
                 }label:{
                     Text("SOS")
                 }.tint(.red).frame(width: 180)
