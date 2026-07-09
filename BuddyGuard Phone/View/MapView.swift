@@ -147,9 +147,6 @@ struct MapView: View {
                     }
                 }
             }
-            .onDisappear {
-                cleanUp()
-            }
             .task {
                 // Active user: find safe place and draw route
                 if role == .activeUser, let coord = locationManager.coordinate {
