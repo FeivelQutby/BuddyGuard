@@ -10,11 +10,13 @@ import SwiftUI
 struct FalseAlaramView: View {
     @State private var isYesPresented: Bool = false
     @State private var isSOSPresented: Bool = false
+    @State private var isFalseAlarm: Bool = false
+    @Binding var showDirection: Bool
     var body: some View {
         ZStack{
             VStack(){
                 Text("False Alarm?").fontWeight(.semibold).padding(.bottom, 10)
-                
+    
                 Button{
                     isYesPresented.toggle()
                 }label:{
@@ -64,7 +66,8 @@ struct FalseAlaramView: View {
                 Text("Are you sure?").fontWeight(.semibold).padding(.bottom, 10)
                 
                 Button{
-                    
+                    isFalseAlarm.toggle()
+                    showDirection.toggle()
                 }label:{
                     Text("Yes")
                 }
@@ -77,5 +80,6 @@ struct FalseAlaramView: View {
 }
 
 #Preview {
-    FalseAlaramView()
+    @State var showDirection: Bool = true
+    FalseAlaramView(showDirection: $showDirection)
 }
