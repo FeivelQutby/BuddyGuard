@@ -24,6 +24,7 @@ struct BuddyGuardApp: App {
                 if authManager.isAuthenticated {
                     ContentView()
                         .environment(authManager)
+                        .environment(DeepLinkRouter.shared)
                 } else {
                     LoginView()
                         .onOpenURL { url in

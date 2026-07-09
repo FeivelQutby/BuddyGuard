@@ -24,6 +24,9 @@ struct EmergencyView: View {
 
     @State private var locationManager = LocationManager()
     @State private var liveTrackingManager = LiveTrackingManager()
+    
+    /// True while we're checking Firestore for a resumable session (avoids flash of empty UI).
+    @State private var isCheckingSession = true
 
     var body: some View {
         
@@ -105,6 +108,44 @@ struct EmergencyView: View {
         }
         .toast(isPresented: $showCancelledToast, icon: "xmark.circle.fill", message: "Emergency cancelled", tint: .secondary)
         .toast(isPresented: $showEndedToast, icon: "shield.checkmark.fill", message: "Emergency session ended. You're safe.", duration: 3.0)
+        // ── Session Resume ────────────────────────────────────────────────
+        // If the user had an active emergency session when the app was killed
+        // (e.g. they tapped away after receiving a 'contact_on_way' notification),
+        // resume the session and re-open MapView automatically.
+        .onAppear {
+            Task { await resumeActiveSessionIfNeeded() }
+        }
+    }
+    
+    // MARK: - Session Resume
+    
+    /// Checks Firestore for an active tracking session owned by the current user.
+    /// If found, restores LiveTrackingManager state and re-opens MapView.
+    @MainActor
+    private func resumeActiveSessionIfNeeded() async {
+        defer { isCheckingSession = false }
+        guard let uid = Auth.auth().currentUser?.uid else { return }
+        
+        let db = Firestore.firestore()
+        do {
+            let snapshot = try await db.collection("tracking_sessions")
+                .whereField("userId", isEqualTo: uid)
+                .whereField("isActive", isEqualTo: true)
+                .limit(to: 1)
+                .getDocuments()
+            
+            guard let doc = snapshot.documents.first else { return }
+            let sessionId = doc.data()["sessionId"] as? String ?? doc.documentID
+            
+            // Restore the manager's session state so MapView can continue
+            // broadcasting location / receiving status updates.
+            liveTrackingManager.sessionId = sessionId
+            liveTrackingManager.isActive = true
+            showMap = true
+            print("✅ EmergencyView: Resumed active session \(sessionId)")
+        } catch {
+            print("⚠️ EmergencyView: Session resume check failed — \(error.localizedDescription)")
+        }
     }
     
     // MARK: - Animation Control Logic

@@ -87,11 +87,27 @@ extension AppDelegate: MessagingDelegate {
 // MARK: - UNUserNotificationCenterDelegate
 // Shows notification banners even when the app is in the foreground.
 extension AppDelegate: UNUserNotificationCenterDelegate {
+    
+    /// Shows banners/sound/badge even while the app is foregrounded.
     func userNotificationCenter(
         _ center: UNUserNotificationCenter,
         willPresent notification: UNNotification,
         withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void
     ) {
         completionHandler([.banner, .sound, .badge])
+    }
+    
+    /// Fires when the user TAPS a notification (app backgrounded or cold-launched).
+    /// Routes to the appropriate screen via DeepLinkRouter.
+    func userNotificationCenter(
+        _ center: UNUserNotificationCenter,
+        didReceive response: UNNotificationResponse,
+        withCompletionHandler completionHandler: @escaping () -> Void
+    ) {
+        let userInfo = response.notification.request.content.userInfo
+        DispatchQueue.main.async {
+            DeepLinkRouter.shared.handle(userInfo: userInfo)
+        }
+        completionHandler()
     }
 }

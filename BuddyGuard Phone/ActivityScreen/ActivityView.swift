@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct ActivityView: View {
+    @Environment(DeepLinkRouter.self) private var deepLinkRouter
     @State private var viewModel: ActivityViewModel
     @State private var showAlertToast = false
     @State private var alertName = ""
@@ -40,7 +41,31 @@ struct ActivityView: View {
                 showAlertToast = true
             }
         }
+        // ── Deep Link: notification tap brings us here ────────────────────
+        // Triggered when the Activity tab becomes visible with a pending session.
+        .onAppear {
+            consumePendingDeepLink()
+        }
+        // Triggered on cold launch: data may not be loaded yet when onAppear fires,
+        // so we also watch for the requests list to populate.
+        .onChange(of: viewModel.requests) { _, _ in
+            consumePendingDeepLink()
+        }
         .toast(isPresented: $showAlertToast, icon: "exclamationmark.triangle.fill", message: "\(alertName) needs help! Tap to view location.", tint: .red, duration: 4.0)
+    }
+    
+    // ── Helpers ───────────────────────────────────────────────────────────
+    
+    /// Finds the request matching the pending session ID and opens it.
+    /// Safe to call multiple times — clears the pending ID after consuming it.
+    private func consumePendingDeepLink() {
+        guard let sessionId = deepLinkRouter.pendingSessionId else { return }
+        guard let match = viewModel.requests.first(where: { $0.sessionId == sessionId }) else {
+            // Data not ready yet — onChange(of: viewModel.requests) will retry.
+            return
+        }
+        deepLinkRouter.pendingSessionId = nil
+        viewModel.startTracking(match)
     }
 }
 

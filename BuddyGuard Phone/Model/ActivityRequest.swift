@@ -8,7 +8,11 @@
 import CoreLocation
 import Foundation
 
-struct ActivityRequest: Identifiable {
+struct ActivityRequest: Identifiable, Equatable {
+    static func == (lhs: ActivityRequest, rhs: ActivityRequest) -> Bool {
+        lhs.sessionId == rhs.sessionId
+    }
+
     let id: UUID
     let name: String
     let startedAt: String
