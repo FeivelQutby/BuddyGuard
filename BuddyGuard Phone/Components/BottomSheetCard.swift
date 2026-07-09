@@ -9,6 +9,7 @@ struct BottomSheetCard: View{
     @Binding var routeManager: RouteManager
     /// Live status from the Firestore session listener
     var trackedUserStatus: UserState = .OnTheWay
+    var notifiedContacts: [EmergencyContact] = []
     var onSOS: () -> Void = {}
     var onImSafe: () -> Void = {}
     var onImOnMyWay: () -> Void = {}
@@ -33,7 +34,7 @@ struct BottomSheetCard: View{
                     )
                 }
             case .activeUser:
-                ActiveUserDetail(routeManager: $routeManager, onSOS: onSOS, onImSafe: onImSafe)
+                ActiveUserDetail(routeManager: $routeManager, contacts: notifiedContacts, onSOS: onSOS, onImSafe: onImSafe)
             }
         }
     }
@@ -51,76 +52,92 @@ private struct EmergencyContactDetail: View {
     @State private var isNavigating = false
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 20){
-            Text("\(request.name)'s Activity").font(.largeTitle).fontWeight(.bold).frame(alignment: .topLeading).foregroundStyle(.darkActive)
-            
-            HStack{
-                VStack(alignment: .leading){
-                    Text("\(request.name)'s status").font(.footnote).foregroundStyle(.darkActive)
-                    RoundedRectangle(cornerRadius: 1000).fill(liveStatus.fillColor).stroke(liveStatus.strokeColor, lineWidth: 2).frame(height: 50).overlay(
-                        Text(liveStatus.label).font(.title3).fontWeight(.bold).foregroundColor(.black).frame(maxWidth: .infinity,alignment: .leading).padding()
-                    )
-                    .offset(x: -10, y: 0)
-                }.frame(maxWidth: .infinity, alignment: .leading)
-                
-                VStack(alignment: .leading){
-                    Text("ETA").font(.footnote)
+        VStack(alignment: .leading, spacing: 0) {
+            Text("\(request.name)'s Activity")
+                .font(.title2.weight(.bold))
+                .foregroundStyle(.darkActive)
+                .padding(.bottom, 16)
+
+            HStack(alignment: .top) {
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("\(request.name)'s status")
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                    HStack(spacing: 6) {
+                        Image(systemName: liveStatus.iconName)
+                            .font(.body.weight(.bold))
+                            .foregroundStyle(liveStatus.fillColor)
+                        Text(liveStatus.label)
+                            .font(.body.weight(.bold))
+                            .foregroundStyle(liveStatus.fillColor)
+                    }
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("ETA")
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                    Text("\(routeManager.eta ?? "...") (\(routeManager.distance ?? "...") km)")
+                        .font(.body.weight(.bold))
                         .foregroundStyle(.darkActive)
-                    Text("\(routeManager.eta ?? "...") (\(routeManager.distance ?? "...") km)").font(.title3).fontWeight(.bold)
-                        .foregroundStyle(.darkActive)
-                }.frame(maxWidth: .infinity, alignment: .leading)
-            }.task{
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+            }
+            .padding(.bottom, 16)
+            .task {
                 routeManager.sourcePlaceName = await routeManager.getSourcePlaceName(from: request.coordinate)
             }
-            
-            VStack(spacing: 4){
-                VStack(alignment: .leading){
-                    Text("From").font(.footnote)
-                        .foregroundStyle(.darkActive)
-                    Text("\(routeManager.sourcePlaceName ?? "Unknown location")")
-                        .font(.title3)
-                        .fontWeight(.bold)
-                        .frame(maxWidth: .infinity,alignment: .leading)
-                        .foregroundStyle(.darkActive)
-                }.frame(maxWidth: .infinity, alignment: .leading)
-                
-                VStack(alignment: .leading){
-                    Text("To").font(.footnote)
-                        .foregroundStyle(.darkActive)
-                    Text("\(routeManager.safePlaceName ?? "Finding Location...")")
-                        .font(.title3)
-                        .fontWeight(.bold)
-                        .foregroundStyle(.darkActive)
-                    Text("\(routeManager.safePlaceAddress ?? "...")")
-                        .font(.footnote)
-                        .foregroundStyle(.darkActive)
-                }.frame(maxWidth: .infinity, alignment: .leading)
+
+            VStack(alignment: .leading, spacing: 4) {
+                Text("From")
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+                Text(routeManager.sourcePlaceName ?? "Unknown location")
+                    .font(.body.weight(.bold))
+                    .foregroundStyle(.darkActive)
             }
-        }.padding()
-            .offset(x: 0, y: 25)
-        
-        // "I'm on my way" — navigates contact to the SAFE DESTINATION, not the friend
-        Button{
-            guard !isNavigating else { return }
-            isNavigating = true
-            HapticManager.impact(.medium)
-            onImOnMyWay()
-        }label:{
-            HStack(spacing: 8) {
-                if isNavigating {
-                    Image(systemName: "figure.walk")
-                    Text("I'm going to Safe Place")
-                } else {
-                    Image(systemName: "car.fill")
-                    Text("I'm on my way")
+            .padding(.bottom, 12)
+
+            VStack(alignment: .leading, spacing: 4) {
+                Text("To")
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+                Text(routeManager.safePlaceName ?? "Finding Location...")
+                    .font(.body.weight(.bold))
+                    .foregroundStyle(.darkActive)
+                Text(routeManager.safePlaceAddress ?? "...")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+
+            Spacer()
+
+            Button {
+                guard !isNavigating else { return }
+                isNavigating = true
+                HapticManager.impact(.medium)
+                onImOnMyWay()
+            } label: {
+                HStack(spacing: 8) {
+                    if isNavigating {
+                        Image(systemName: "figure.walk")
+                        Text("I'm going to Safe Place")
+                    } else {
+                        Image(systemName: "car.fill")
+                        Text("I'm on my way")
+                    }
                 }
+                .font(.headline)
+                .foregroundStyle(.white)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 14)
             }
-            .foregroundColor(.white)
-            .frame(maxWidth: .infinity, maxHeight: 50)
+            .buttonStyle(.borderedProminent)
+            .tint(isNavigating ? .green : .normalActiveNd)
         }
-        .buttonStyle(.borderedProminent)
-        .tint(isNavigating ? .green : .normalActiveNd)
-        .padding()
+        .padding(20)
+        .frame(maxHeight: .infinity, alignment: .top)
     }
 }
 
@@ -128,48 +145,107 @@ private struct EmergencyContactDetail: View {
 /// headed, their ETA, and the two actions that change their own status.
 private struct ActiveUserDetail: View {
     @Binding var routeManager: RouteManager
+    var contacts: [EmergencyContact]
     var onSOS: () -> Void
     var onImSafe: () -> Void
-    
+
     var body: some View {
-        VStack(alignment: .leading, spacing: 20){
-            Text("Heading to Safety")
-                .foregroundStyle(.darkActive).font(.largeTitle).fontWeight(.bold).frame(alignment: .topLeading)
-            
-            VStack(alignment: .leading){
-                Text("Destination").font(.footnote)
+        VStack(alignment: .leading, spacing: 0) {
+            Text("Heading to safety")
+                .font(.title2.weight(.bold))
+                .foregroundStyle(.darkActive)
+                .padding(.bottom, 16)
+
+            HStack(alignment: .top) {
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Emergency contact")
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                    HStack(spacing: -8) {
+                        ForEach(contacts.prefix(5)) { contact in
+                            Circle()
+                                .fill(.normalActiveNd)
+                                .frame(width: 36, height: 36)
+                                .overlay(
+                                    Text(contact.displayName.prefix(1).uppercased())
+                                        .font(.caption.weight(.bold))
+                                        .foregroundStyle(.white)
+                                )
+                                .overlay(
+                                    Circle().stroke(.white, lineWidth: 2)
+                                )
+                        }
+                    }
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("ETA")
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                    Text("\(routeManager.eta ?? "...") (\(routeManager.distance ?? "...") km)")
+                        .font(.body.weight(.bold))
+                        .foregroundStyle(.darkActive)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+            }
+            .padding(.bottom, 16)
+
+            VStack(alignment: .leading, spacing: 4) {
+                Text("From")
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+                Text(routeManager.sourcePlaceName ?? "Current Location")
+                    .font(.body.weight(.bold))
                     .foregroundStyle(.darkActive)
-                Text("\(routeManager.safePlaceName ?? "Finding location...")").font(.title3).fontWeight(.bold).foregroundStyle(.darkActive)
-                Text("\(routeManager.safePlaceAddress ?? "...")").font(.footnote).foregroundStyle(.darkActive)
-            }.frame(maxWidth: .infinity, alignment: .leading)
-            
-            VStack(alignment: .leading){
-                Text("ETA").font(.footnote)
+            }
+            .padding(.bottom, 12)
+
+            VStack(alignment: .leading, spacing: 4) {
+                Text("To nearest safe place")
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+                Text(routeManager.safePlaceName ?? "Finding location...")
+                    .font(.body.weight(.bold))
                     .foregroundStyle(.darkActive)
-                Text("\(routeManager.eta ?? "...") (\(routeManager.distance ?? "...") km)").font(.title3).fontWeight(.bold)
-                    .foregroundStyle(.darkActive)
-            }.frame(maxWidth: .infinity, alignment: .leading)
-            
-            HStack(spacing: 12){
+                Text(routeManager.safePlaceAddress ?? "...")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+
+            Spacer()
+
+            HStack(spacing: 12) {
                 Button {
                     HapticManager.notification(.error)
                     onSOS()
                 } label: {
-                    Text("SOS").foregroundColor(.white).frame(maxWidth: .infinity, maxHeight: 50).fontWeight(.bold)
-                }.buttonStyle(.borderedProminent).tint(.red)
-                
+                    Text("SOS")
+                        .font(.headline)
+                        .foregroundStyle(.white)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 14)
+                }
+                .buttonStyle(.borderedProminent)
+                .tint(.red)
+
                 Button {
                     HapticManager.notification(.success)
                     onImSafe()
                 } label: {
-                    Text("I'm Safe").foregroundColor(.white).frame(maxWidth: .infinity, maxHeight: 50).fontWeight(.bold)
-                }.buttonStyle(.borderedProminent).tint(.normalActiveNd)
+                    Text("I'm safe")
+                        .font(.headline)
+                        .foregroundStyle(.white)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 14)
+                }
+                .buttonStyle(.borderedProminent)
+                .tint(.normalActiveNd)
             }
-            .offset(y: 60)
-        }.padding()
-            .offset(x: 0, y: -55)
+        }
+        .padding(20)
+        .frame(maxHeight: .infinity, alignment: .top)
     }
-    
 }
 
 #Preview("Emergency Contact") {

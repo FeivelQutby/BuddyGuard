@@ -1,70 +1,61 @@
-//
-//  AddContactSheet.swift
-//  BuddyGuard
-//
-//  Created by George Maximillian Theodore on 06/07/26.
-//
-
-
 import SwiftUI
 
 struct AddContactSheet: View {
     @Environment(\.dismiss) private var dismiss
     @State private var contactManager = EmergencyContactManager()
-    
+
     @State private var email: String = ""
     @State private var selectedPermission: InvitationPermission = .both
-    
+
     var body: some View {
         NavigationStack {
             VStack(spacing: 28) {
-                
-                // Form Section
+
                 VStack(alignment: .leading, spacing: 16) {
                     Text("Emergency Contact Email")
                         .font(.subheadline.weight(.semibold))
                         .foregroundStyle(.secondary)
-                    
+
                     TextField("example@email.com", text: $email)
                         .keyboardType(.emailAddress)
                         .autocorrectionDisabled()
                         .textInputAutocapitalization(.never)
                         .padding()
-                        .background(Color(.systemGray6))
-                        .cornerRadius(12)
+                        .background(.lightD)
+                        .clipShape(RoundedRectangle(cornerRadius: 12))
+                        .foregroundStyle(.darkActive)
                 }
-                
-                // Permission Selector Section
+
                 VStack(alignment: .leading, spacing: 12) {
                     Text("Access Configuration")
                         .font(.subheadline.weight(.semibold))
                         .foregroundStyle(.secondary)
-                    
+
                     Picker("Permissions", selection: $selectedPermission) {
                         ForEach(InvitationPermission.allCases, id: \.self) { permission in
                             Text(permission.title).tag(permission)
                         }
                     }
                     .pickerStyle(.inline)
-                    .padding(.horizontal, 4)
+                    .tint(.normalActive)
+                    .background(.lightD)
+                    .clipShape(RoundedRectangle(cornerRadius: 12))
                 }
-                
-                // Async Network Status Feedback
+
                 if !contactManager.statusMessage.isEmpty {
                     Text(contactManager.statusMessage)
-                        .font(.footnote)
+                        .font(.footnote.weight(.medium))
                         .foregroundStyle(contactManager.statusMessage.contains("successfully") ? .green : .red)
                         .multilineTextAlignment(.center)
                 }
-                
+
                 Spacer()
-                
-                // Send Action Button
+
                 Button {
                     Task {
                         await contactManager.sendInvitation(toEmail: email, permission: selectedPermission)
-                        // Optional: Dismiss sheet on success after a short delay
                         if contactManager.statusMessage.contains("successfully") {
+                            HapticManager.notification(.success)
                             try? await Task.sleep(for: .seconds(1.5))
                             dismiss()
                         }
@@ -79,10 +70,10 @@ struct AddContactSheet: View {
                         Text("Send Invitation")
                             .font(.headline)
                     }
-                    .foregroundStyle(.white)
+                    .foregroundStyle(.light)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 16)
-                    .background(email.isEmpty ? Color.gray : Color("normalActive")) // ini normal active masih blom bisa
+                    .background(.normalActiveNd)
                     .clipShape(Capsule())
                 }
                 .disabled(email.isEmpty)
@@ -92,18 +83,27 @@ struct AddContactSheet: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button("Close") { dismiss() }
+                    Button {
+                        dismiss()
+                    } label: {
+                        Image(systemName: "xmark")
+                            .font(.footnote.weight(.bold))
+                            .foregroundStyle(.secondary)
+                            .padding(8)
+                            .background(.lightD2)
+                            .clipShape(Circle())
+                    }
                 }
             }
         }
     }
 }
 
-#Preview {
+#Preview("Light") {
     AddContactSheet()
 }
 
-#Preview {
+#Preview("Dark") {
     AddContactSheet()
         .preferredColorScheme(.dark)
 }

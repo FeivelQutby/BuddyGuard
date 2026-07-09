@@ -8,6 +8,11 @@
 import Foundation
 import MapKit
 
+enum MapRole {
+    case emergencyContact
+    case activeUser
+}
+
 @Observable
 class RouteManager {
     var routeToFriend: MKRoute?
@@ -16,40 +21,60 @@ class RouteManager {
     var safePlaceAddress: String?
     var sourcePlaceName: String?
     var currentStepIndex: Int = 0
-    
-    //Step Navigation
-    var currentStep: MKRoute.Step?{
-        guard let route = routeFriendToDestination else {
-            return nil
+
+    var currentStep: MKRoute.Step? {
+        currentStep(for: .activeUser)
+    }
+
+    func updateCurrentStep(location: CLLocationCoordinate2D) {
+        updateCurrentStep(location: location, role: .activeUser)
+    }
+
+    func currentStep(for role: MapRole) -> MKRoute.Step? {
+        let route: MKRoute?
+        switch role {
+        case .emergencyContact:
+            route = routeToFriend
+        case .activeUser:
+            route = routeFriendToDestination
         }
-        guard currentStepIndex < route.steps.count else {
-            return nil
-        }
+        guard let route else { return nil }
+        guard currentStepIndex < route.steps.count else { return nil }
         let step = route.steps[currentStepIndex]
-        if step.distance == 0 && currentStepIndex + 1 < route.steps.count{
+        if step.distance == 0 && currentStepIndex + 1 < route.steps.count {
             return route.steps[currentStepIndex + 1]
         }
         return step
     }
-    
-    func updateCurrentStep(location: CLLocationCoordinate2D){
-        guard let route = routeFriendToDestination else {
-            return
+
+    func stepsCount(for role: MapRole) -> Int {
+        let route: MKRoute?
+        switch role {
+        case .emergencyContact:
+            route = routeToFriend
+        case .activeUser:
+            route = routeFriendToDestination
         }
-        guard currentStepIndex < route.steps.count else {
-            return
+        return route?.steps.count ?? 0
+    }
+
+    func updateCurrentStep(location: CLLocationCoordinate2D, role: MapRole) {
+        let route: MKRoute?
+        switch role {
+        case .emergencyContact:
+            route = routeToFriend
+        case .activeUser:
+            route = routeFriendToDestination
         }
+        guard let route else { return }
+        guard currentStepIndex < route.steps.count else { return }
         let step = route.steps[currentStepIndex]
-        guard let endPoint = step.polyline.coordinates.last else {
-            return
-        }
-        let startCoordinateStep = CLLocation(latitude: location.latitude, longitude: location.longitude)
-        let endCoordinateStep = CLLocation(latitude: endPoint.latitude, longitude: endPoint.longitude)
-        let distanceToEnd =  endCoordinateStep.distance(from: startCoordinateStep)
-        if distanceToEnd < 20{
+        guard let endPoint = step.polyline.coordinates.last else { return }
+        let from = CLLocation(latitude: location.latitude, longitude: location.longitude)
+        let to = CLLocation(latitude: endPoint.latitude, longitude: endPoint.longitude)
+        if to.distance(from: from) < 20 {
             currentStepIndex += 1
         }
-        
     }
     
     //ETA

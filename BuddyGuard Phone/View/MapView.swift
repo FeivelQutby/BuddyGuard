@@ -11,11 +11,6 @@ import SwiftData
 import FirebaseFirestore
 import FirebaseAuth
 
-enum MapRole {
-    case emergencyContact
-    case activeUser
-}
-
 struct MapView: View {
     
     let request: ActivityRequest?
@@ -56,6 +51,9 @@ struct MapView: View {
     
     // MARK: - Emergency contact: "I'm on my way" navigation state
     @State private var contactNavigating: Bool = false
+
+    // Active user: emergency contacts who can receive alerts
+    @State private var notifiedContacts: [EmergencyContact] = []
 
     // Toasts
     @State private var showNotifiedToast = false
@@ -183,6 +181,7 @@ struct MapView: View {
                     sheetDetent: $sheetDetent,
                     routeManager: $routeManager,
                     trackedUserStatus: trackedUserStatus,
+                    notifiedContacts: notifiedContacts,
                     onSOS: {
                         myStatus = .Urgent
                         liveTrackingManager?.updateStatus(.Urgent)
@@ -213,19 +212,36 @@ struct MapView: View {
                 BottomFloatingToolBar().padding(.trailing, 15)
             }
             
-            // MARK: - Back Button (Emergency Contact only)
-            .overlay(alignment: .topLeading) {
-                if role == .emergencyContact {
-                    Button(action: { dismiss() }) {
-                        Image(systemName: "chevron.backward")
-                            .frame(width: 20, height: 20)
-                            .foregroundStyle(.gray)
+            // MARK: - Direction Card + Back Button
+            .overlay(alignment: .top) {
+                VStack(spacing: 8) {
+                    HStack(alignment: .top) {
+                        if role == .emergencyContact {
+                            Button(action: { dismiss() }) {
+                                Image(systemName: "chevron.backward")
+                                    .frame(width: 20, height: 20)
+                                    .foregroundStyle(.gray)
+                            }
+                            .buttonStyle(.glass)
+                            .buttonBorderShape(.circle)
+                            .controlSize(.large)
+                        }
+                        Spacer()
                     }
-                    .buttonStyle(.glass)
-                    .buttonBorderShape(.circle)
-                    .controlSize(.large)
-                    .padding(10)
+                    .padding(.horizontal, 10)
+
+                    if let step = routeManager.currentStep(for: role) {
+                        TopSheetCard(
+                            step: step,
+                            currentIndex: routeManager.currentStepIndex,
+                            totalSteps: routeManager.stepsCount(for: role)
+                        )
+                        .padding(.horizontal, 16)
+                        .transition(.move(edge: .top).combined(with: .opacity))
+                    }
                 }
+                .padding(.top, 10)
+                .animation(.easeInOut(duration: 0.3), value: routeManager.currentStepIndex)
             }
 
             // MARK: - Toasts
@@ -266,9 +282,16 @@ struct MapView: View {
             startSessionListener(sessionId: request.sessionId)
         }
         
-        if role == .activeUser, let sessionId = liveTrackingManager?.sessionId {
-            // Listen for contacts who are on their way (watching the active user)
-            startFriendsOnWayListener(sessionId: sessionId)
+        if role == .activeUser {
+            if let sessionId = liveTrackingManager?.sessionId {
+                startFriendsOnWayListener(sessionId: sessionId)
+            }
+            Task { await loadNotifiedContacts() }
+            if let coord = locationManager.coordinate {
+                Task {
+                    routeManager.sourcePlaceName = await routeManager.getSourcePlaceName(from: coord)
+                }
+            }
         }
     }
     
@@ -283,9 +306,36 @@ struct MapView: View {
         }
     }
     
+    private func loadNotifiedContacts() async {
+        guard let uid = Auth.auth().currentUser?.uid else { return }
+        let db = Firestore.firestore()
+        do {
+            let snapshot = try await db.collection("users").document(uid)
+                .collection("contacts")
+                .whereField("canSendTo", isEqualTo: true)
+                .getDocuments()
+            var contacts: [EmergencyContact] = []
+            for doc in snapshot.documents {
+                let data = doc.data()
+                contacts.append(EmergencyContact(
+                    id: doc.documentID,
+                    name: data["name"] as? String ?? "?",
+                    email: data["email"] as? String ?? "",
+                    canSendTo: true,
+                    canReceiveFrom: data["canReceiveFrom"] as? Bool ?? false
+                ))
+            }
+            notifiedContacts = contacts
+        } catch {
+            print("⚠️ Failed to load notified contacts: \(error.localizedDescription)")
+        }
+    }
+
     // MARK: - Location Change Handler
     
     private func handleLocationChange(_ newCoord: CLLocationCoordinate2D) {
+        routeManager.updateCurrentStep(location: newCoord, role: role)
+
         if role == .activeUser {
             liveTrackingManager?.uploadLocation(newCoord)
             

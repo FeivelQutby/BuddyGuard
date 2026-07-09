@@ -140,10 +140,12 @@ struct ProfileView: View {
         .sheet(isPresented: $showAddContactSheet) {
             AddContactSheet()
                 .presentationDetents([.medium,.large])
+                .presentationDragIndicator(.visible)
         }
         .sheet(isPresented: $showInboxSheet) {
             ContactInboxCard()
                 .presentationDetents([.medium,.medium])
+                .presentationDragIndicator(.visible)
         }
 
         .onAppear {
@@ -161,7 +163,7 @@ private struct ProfileInfoSection: View {
         VStack(spacing: 0) {
             Divider().background(Color(.systemGray3))
             
-            ProfileInfoRow(icon: "person.fill", title: "Display Name", value: authManager.displayName, showChevron: true)
+            ProfileInfoRow(icon: "person.fill", title: "Display Name", value: authManager.displayName, isEditable: true)
             Divider().background(Color(.systemGray3))
             ProfileInfoRow(icon: "envelope.fill", title: "Email", value: authManager.email)
             Divider().background(Color(.systemGray3))
@@ -178,119 +180,107 @@ private struct ProfileInfoRow: View {
     let icon: String
     let title: String
     let value: String
-    var showChevron: Bool = false
-    @State private var showEditNameSheet = false
+    var isEditable: Bool = false
+
+    @State private var isEditing = false
+    @State private var editText = ""
+    @State private var isSaving = false
     @Environment(AuthManager.self) private var authManager
+    @FocusState private var isFocused: Bool
 
     var body: some View {
         HStack(spacing: 16) {
-            HStack{
-                Circle()
-                    .fill(.lightD2)
-                    .frame(width: 44, height: 44)
-                    .overlay(
-                        Image(systemName: icon)
-                            .font(.body.weight(.semibold))
-                            .foregroundStyle(.darkActive)
-                    )
-            }
+            Circle()
+                .fill(.lightD2)
+                .frame(width: 44, height: 44)
+                .overlay(
+                    Image(systemName: icon)
+                        .font(.body.weight(.semibold))
+                        .foregroundStyle(.darkActive)
+                )
+
             VStack(alignment: .leading, spacing: 3) {
                 Text(title)
                     .font(.caption)
                     .foregroundStyle(.secondary)
-                Text(value)
-                    .font(.body.weight(.semibold))
-                    .foregroundStyle(.darkActive)
-            }
-            Spacer()
-            if showChevron {
-                Button {
-                    showEditNameSheet = true
-                } label: {
-                    Image(systemName: "chevron.right")
-                        .font(.body)
-                        .foregroundStyle(.white)
-                }
-            }
-        }
-        .sheet(isPresented: $showEditNameSheet) {
-            EditDisplayNameSheet(authManager: authManager)
-                .presentationDetents([.medium,.medium])
-        }
-        .padding(.vertical, 10)
-    }
-}
 
-// MARK: - Edit Display Name Sheet
+                if isEditing {
+                    HStack(spacing: 8) {
+                        TextField("Your name", text: $editText)
+                            .font(.body.weight(.semibold))
+                            .foregroundStyle(.darkActive)
+                            .focused($isFocused)
+                            .autocorrectionDisabled()
+                            .onSubmit { save() }
 
-private struct EditDisplayNameSheet: View {
-    let authManager: AuthManager
-    @Environment(\.dismiss) private var dismiss
-    @State private var newName: String = ""
-    @State private var isSaving = false
-    @State private var errorMessage: String?
-    
-    var body: some View {
-        NavigationStack {
-            VStack(spacing: 24) {
-                VStack(alignment: .leading, spacing: 10) {
-                    Text("Display Name")
-                        .font(.subheadline.weight(.semibold))
-                        .foregroundStyle(.darkActive)
-                    TextField("Your name", text: $newName)
-                        .padding()
-                        .background(Color(.systemGray6))
-                        .cornerRadius(12)
-                        .autocorrectionDisabled()
-                }
-                
-                if let error = errorMessage {
-                    Text(error)
-                        .font(.caption)
-                        .foregroundStyle(.red)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                }
-                
-                Spacer()
-                
-                Button {
-                    guard !newName.trimmingCharacters(in: .whitespaces).isEmpty else { return }
-                    isSaving = true
-                    Task {
-                        let success = await authManager.updateDisplayName(newName)
-                        isSaving = false
-                        if success {
-                            dismiss()
+                        if isSaving {
+                            ProgressView()
+                                .controlSize(.small)
                         } else {
-                            errorMessage = "Failed to update name. Please try again."
+                            Button { save() } label: {
+                                Image(systemName: "checkmark.circle.fill")
+                                    .font(.title3)
+                                    .foregroundStyle(.normalActiveNd)
+                            }
+                            .disabled(editText.trimmingCharacters(in: .whitespaces).isEmpty)
+
+                            Button { cancelEditing() } label: {
+                                Image(systemName: "xmark.circle.fill")
+                                    .font(.title3)
+                                    .foregroundStyle(.secondary)
+                            }
                         }
                     }
-                } label: {
-                    HStack {
-                        if isSaving { ProgressView().tint(.white).padding(.trailing, 6) }
-                        Text("Save")
-                            .font(.headline)
-                            .padding(20)
-                            .background(.darkActiveNd)
-                    }
-                    .foregroundStyle(.white)
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 16)
-                    .background(newName.trimmingCharacters(in: .whitespaces).isEmpty ? Color.gray : Color("normalActive", bundle: nil))
-                    .clipShape(Capsule())
-                }
-                .disabled(newName.trimmingCharacters(in: .whitespaces).isEmpty || isSaving)
-                .padding(.bottom, 8)
-            }
-            .padding(24)
-            .navigationTitle("Edit Display Name")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button("Close") { dismiss() }
+                } else {
+                    Text(value)
+                        .font(.body.weight(.semibold))
+                        .foregroundStyle(.darkActive)
                 }
             }
-            .onAppear { newName = authManager.displayName }
+
+            Spacer()
+
+            if isEditable && !isEditing {
+                Image(systemName: "pencil")
+                    .font(.footnote.weight(.semibold))
+                    .foregroundStyle(.secondary)
+            }
+        }
+        .contentShape(Rectangle())
+        .onTapGesture {
+            guard isEditable && !isEditing else { return }
+            startEditing()
+        }
+        .animation(.easeInOut(duration: 0.2), value: isEditing)
+        .padding(.vertical, 10)
+    }
+
+    private func startEditing() {
+        editText = value
+        isEditing = true
+        isFocused = true
+    }
+
+    private func cancelEditing() {
+        isEditing = false
+        isFocused = false
+    }
+
+    private func save() {
+        let trimmed = editText.trimmingCharacters(in: .whitespaces)
+        guard !trimmed.isEmpty, trimmed != value else {
+            cancelEditing()
+            return
+        }
+        isSaving = true
+        Task {
+            let success = await authManager.updateDisplayName(trimmed)
+            isSaving = false
+            if success {
+                HapticManager.notification(.success)
+                isEditing = false
+                isFocused = false
+            }
         }
     }
 }
@@ -401,19 +391,19 @@ private struct ContactPermissionSheet: View {
     var body: some View {
         NavigationStack {
             VStack(spacing: 24) {
-                // Contact Info Header
                 VStack(spacing: 8) {
-                    ZStack {
-                        Circle()
-                            .fill(Color(.systemGray5))
-                            .frame(width: 72, height: 72)
-                        Text(contact.name.prefix(1).uppercased())
-                            .font(.system(size: 30, weight: .bold))
-                            .foregroundStyle(.secondary)
-                    }
-                    .padding(.top, 16)
+                    Circle()
+                        .fill(.lightD2)
+                        .frame(width: 72, height: 72)
+                        .overlay(
+                            Text(contact.name.prefix(1).uppercased())
+                                .font(.system(size: 30, weight: .bold))
+                                .foregroundStyle(.darkActive)
+                        )
+                        .padding(.top, 16)
                     Text(contact.name)
                         .font(.title2.weight(.bold))
+                        .foregroundStyle(.darkActive)
                     Text(contact.email)
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
@@ -426,9 +416,10 @@ private struct ContactPermissionSheet: View {
                         .foregroundStyle(.secondary)
                     TextField("e.g. Mom, BFF, Partner", text: $nickname)
                         .padding()
-                        .background(Color(.systemGray6))
-                        .cornerRadius(12)
+                        .background(.lightD2)
+                        .clipShape(RoundedRectangle(cornerRadius: 12))
                         .autocorrectionDisabled()
+                        .foregroundStyle(.darkActive)
                 }
                 .padding(.horizontal, 16)
                 
@@ -438,26 +429,30 @@ private struct ContactPermissionSheet: View {
                         VStack(alignment: .leading, spacing: 3) {
                             Text("Send My Alerts")
                                 .font(.body.weight(.medium))
+                                .foregroundStyle(.darkActive)
                             Text("They can see your live location")
                                 .font(.caption).foregroundStyle(.secondary)
                         }
                     }
+                    .tint(.normalActiveNd)
                     .padding(.vertical, 12).padding(.horizontal, 16)
-                    
+
                     Divider().padding(.leading, 16)
-                    
+
                     Toggle(isOn: $canReceiveFrom) {
                         VStack(alignment: .leading, spacing: 3) {
                             Text("Receive Their Alerts")
                                 .font(.body.weight(.medium))
+                                .foregroundStyle(.darkActive)
                             Text("You can see their live location")
                                 .font(.caption).foregroundStyle(.secondary)
                         }
                     }
+                    .tint(.normalActiveNd)
                     .padding(.vertical, 12).padding(.horizontal, 16)
                 }
-                .background(Color(.systemGray6))
-                .cornerRadius(12)
+                .background(.lightD2)
+                .clipShape(RoundedRectangle(cornerRadius: 12))
                 .padding(.horizontal, 16)
                 
                 Spacer()
@@ -487,13 +482,12 @@ private struct ContactPermissionSheet: View {
                     .foregroundStyle(.white)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 16)
-                    .background(Color("normalActive", bundle: nil))
+                    .background(.normalActiveNd)
                     .clipShape(Capsule())
                 }
                 .padding(.horizontal, 24)
                 .disabled(isSaving)
-                
-                // Remove Contact Button
+
                 Button(role: .destructive) {
                     showDeleteConfirmation = true
                 } label: {
@@ -506,7 +500,16 @@ private struct ContactPermissionSheet: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button("Close") { dismiss() }
+                    Button {
+                        dismiss()
+                    } label: {
+                        Image(systemName: "xmark")
+                            .font(.footnote.weight(.bold))
+                            .foregroundStyle(.secondary)
+                            .padding(8)
+                            .background(.lightD2)
+                            .clipShape(Circle())
+                    }
                 }
             }
             .alert("Remove Contact", isPresented: $showDeleteConfirmation) {
