@@ -8,7 +8,11 @@
 import CoreLocation
 import Foundation
 
-struct ActivityRequest: Identifiable {
+struct ActivityRequest: Identifiable, Equatable {
+    static func == (lhs: ActivityRequest, rhs: ActivityRequest) -> Bool {
+        lhs.sessionId == rhs.sessionId
+    }
+
     let id: UUID
     let name: String
     let startedAt: String
@@ -20,6 +24,8 @@ struct ActivityRequest: Identifiable {
     
     // MARK: - Live Tracking Fields
     let sessionId: String
+    /// UID of the person in emergency (the active user being tracked)
+    let userId: String
     let destinationName: String?
     let destinationLatitude: Double?
     let destinationLongitude: Double?
@@ -34,6 +40,7 @@ struct ActivityRequest: Identifiable {
         coordinate: CLLocationCoordinate2D,
         state: UserState = .OnTheWay,
         sessionId: String = "",
+        userId: String = "",
         destinationName: String? = nil,
         destinationLatitude: Double? = nil,
         destinationLongitude: Double? = nil
@@ -47,6 +54,7 @@ struct ActivityRequest: Identifiable {
         self.coordinate = coordinate
         self.state = state
         self.sessionId = sessionId
+        self.userId = userId
         self.destinationName = destinationName
         self.destinationLatitude = destinationLatitude
         self.destinationLongitude = destinationLongitude

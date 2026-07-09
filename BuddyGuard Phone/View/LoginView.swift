@@ -12,6 +12,8 @@ import FirebaseAuth
 import CryptoKit
 import GoogleSignIn // 1. Added this import
 import FirebaseCore
+import FirebaseMessaging
+import FirebaseFirestore
 
 struct LoginView: View {
     @Environment(\.colorScheme) var colorScheme
@@ -132,7 +134,8 @@ struct LoginView: View {
                 
                 if let user = authResult?.user {
                     print("✅ Success! Firebase User UID (Google): \(user.uid)")
-                    // Navigate to the emergency view here!
+                    // Save FCM token now that user is authenticated
+                    saveFCMTokenToDatabase()
                 }
             }
         }
@@ -161,6 +164,8 @@ struct LoginView: View {
                     
                     if let user = authResult?.user {
                         print("✅ Success! Firebase User UID (Apple): \(user.uid)")
+                        // Save FCM token now that user is authenticated
+                        saveFCMTokenToDatabase()
                     }
                 }
             }
@@ -206,6 +211,31 @@ struct LoginView: View {
             String(format: "%02x", $0)
         }.joined()
         return hashString
+    }
+    
+    func saveFCMTokenToDatabase() {
+        guard let currentUID = Auth.auth().currentUser?.uid else { return }
+        
+        Messaging.messaging().token { token, error in
+            if let error = error {
+                print("Error fetching FCM registration token: \(error)")
+                return
+            }
+            guard let fcmToken = token else { return }
+            
+            let db = Firestore.firestore()
+            
+            // Store the single FCM token — this is what the Cloudflare Worker sends pushes to
+            db.collection("users").document(currentUID).setData(
+                ["fcmToken": fcmToken], merge: true
+            ) { error in
+                if let error = error {
+                    print("⚠️ Failed to save FCM token: \(error.localizedDescription)")
+                } else {
+                    print("✅ FCM token saved on login for user \(currentUID)")
+                }
+            }
+        }
     }
 }
 

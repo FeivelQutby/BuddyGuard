@@ -11,11 +11,6 @@ import SwiftData
 import FirebaseFirestore
 import FirebaseAuth
 
-enum MapRole {
-    case emergencyContact
-    case activeUser
-}
-
 struct MapView: View {
     
     let request: ActivityRequest?
@@ -56,6 +51,9 @@ struct MapView: View {
     
     // MARK: - Emergency contact: "I'm on my way" navigation state
     @State private var contactNavigating: Bool = false
+
+    // Active user: emergency contacts who can receive alerts
+    @State private var notifiedContacts: [EmergencyContact] = []
 
     // Toasts
     @State private var showNotifiedToast = false
@@ -149,9 +147,6 @@ struct MapView: View {
                     }
                 }
             }
-            .onDisappear {
-                cleanUp()
-            }
             .task {
                 // Active user: find safe place and draw route
                 if role == .activeUser, let coord = locationManager.coordinate {
@@ -183,15 +178,42 @@ struct MapView: View {
                     sheetDetent: $sheetDetent,
                     routeManager: $routeManager,
                     trackedUserStatus: trackedUserStatus,
+                    notifiedContacts: notifiedContacts,
                     onSOS: {
                         myStatus = .Urgent
                         liveTrackingManager?.updateStatus(.Urgent)
                         showSOSToast = true
+                        // Notify all emergency contacts that user is in urgent danger
+                        let trackingManager = liveTrackingManager
+                        Task {
+                            let tokens = await EmergencyContactManager().fetchFCMTokensForAlertableContacts()
+                            guard !tokens.isEmpty else { return }
+                            let senderName = Auth.auth().currentUser?.displayName ?? "Your Friend"
+                            trackingManager?.triggerEmergencyAlert(
+                                alertId: trackingManager?.sessionId ?? "",
+                                senderName: senderName,
+                                friendTokens: tokens,
+                                notificationType: "sos"
+                            )
+                        }
                     },
                     onImSafe: {
                         myStatus = .Arrived
                         liveTrackingManager?.updateStatus(.Arrived)
                         showImSafeToast = true
+                        // Notify all emergency contacts that user is safe
+                        let trackingManager = liveTrackingManager
+                        Task {
+                            let tokens = await EmergencyContactManager().fetchFCMTokensForAlertableContacts()
+                            guard !tokens.isEmpty else { return }
+                            let senderName = Auth.auth().currentUser?.displayName ?? "Your Friend"
+                            trackingManager?.triggerEmergencyAlert(
+                                alertId: trackingManager?.sessionId ?? "",
+                                senderName: senderName,
+                                friendTokens: tokens,
+                                notificationType: "im_safe"
+                            )
+                        }
                         DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) { dismiss() }
                     },
                     onImOnMyWay: {
@@ -213,19 +235,36 @@ struct MapView: View {
                 BottomFloatingToolBar().padding(.trailing, 15)
             }
             
-            // MARK: - Back Button (Emergency Contact only)
-            .overlay(alignment: .topLeading) {
-                if role == .emergencyContact {
-                    Button(action: { dismiss() }) {
-                        Image(systemName: "chevron.backward")
-                            .frame(width: 20, height: 20)
-                            .foregroundStyle(.gray)
+            // MARK: - Direction Card + Back Button
+            .overlay(alignment: .top) {
+                VStack(spacing: 8) {
+                    HStack(alignment: .top) {
+                        if role == .emergencyContact {
+                            Button(action: { dismiss() }) {
+                                Image(systemName: "chevron.backward")
+                                    .frame(width: 20, height: 20)
+                                    .foregroundStyle(.gray)
+                            }
+                            .buttonStyle(.glass)
+                            .buttonBorderShape(.circle)
+                            .controlSize(.large)
+                        }
+                        Spacer()
                     }
-                    .buttonStyle(.glass)
-                    .buttonBorderShape(.circle)
-                    .controlSize(.large)
-                    .padding(10)
+                    .padding(.horizontal, 10)
+
+                    if let step = routeManager.currentStep(for: role) {
+                        TopSheetCard(
+                            step: step,
+                            currentIndex: routeManager.currentStepIndex,
+                            totalSteps: routeManager.stepsCount(for: role)
+                        )
+                        .padding(.horizontal, 16)
+                        .transition(.move(edge: .top).combined(with: .opacity))
+                    }
                 }
+                .padding(.top, 10)
+                .animation(.easeInOut(duration: 0.3), value: routeManager.currentStepIndex)
             }
 
             // MARK: - Toasts
@@ -266,9 +305,16 @@ struct MapView: View {
             startSessionListener(sessionId: request.sessionId)
         }
         
-        if role == .activeUser, let sessionId = liveTrackingManager?.sessionId {
-            // Listen for contacts who are on their way (watching the active user)
-            startFriendsOnWayListener(sessionId: sessionId)
+        if role == .activeUser {
+            if let sessionId = liveTrackingManager?.sessionId {
+                startFriendsOnWayListener(sessionId: sessionId)
+            }
+            Task { await loadNotifiedContacts() }
+            if let coord = locationManager.coordinate {
+                Task {
+                    routeManager.sourcePlaceName = await routeManager.getSourcePlaceName(from: coord)
+                }
+            }
         }
     }
     
@@ -283,9 +329,36 @@ struct MapView: View {
         }
     }
     
+    private func loadNotifiedContacts() async {
+        guard let uid = Auth.auth().currentUser?.uid else { return }
+        let db = Firestore.firestore()
+        do {
+            let snapshot = try await db.collection("users").document(uid)
+                .collection("contacts")
+                .whereField("canSendTo", isEqualTo: true)
+                .getDocuments()
+            var contacts: [EmergencyContact] = []
+            for doc in snapshot.documents {
+                let data = doc.data()
+                contacts.append(EmergencyContact(
+                    id: doc.documentID,
+                    name: data["name"] as? String ?? "?",
+                    email: data["email"] as? String ?? "",
+                    canSendTo: true,
+                    canReceiveFrom: data["canReceiveFrom"] as? Bool ?? false
+                ))
+            }
+            notifiedContacts = contacts
+        } catch {
+            print("⚠️ Failed to load notified contacts: \(error.localizedDescription)")
+        }
+    }
+
     // MARK: - Location Change Handler
     
     private func handleLocationChange(_ newCoord: CLLocationCoordinate2D) {
+        routeManager.updateCurrentStep(location: newCoord, role: role)
+
         if role == .activeUser {
             liveTrackingManager?.uploadLocation(newCoord)
             
@@ -366,6 +439,26 @@ struct MapView: View {
         
         // 3. Keep contact location updated while navigating
         startContactLocationUpdater(sessionId: sessionId, myUID: myUID)
+        
+        // 4. Send "I'm On My Way" push to the active user
+        let contactName = Auth.auth().currentUser?.displayName ?? "Someone"
+        let activeUserUID = request?.userId ?? ""
+        let alertId = sessionId
+        Task {
+            let contactManager = EmergencyContactManager()
+            if let activeUserToken = await contactManager.fetchTokenForUser(uid: activeUserUID),
+               !activeUserToken.isEmpty {
+                // liveTrackingManager is nil in emergency contact role, so fire directly
+                LiveTrackingManager().triggerEmergencyAlert(
+                    alertId: alertId,
+                    senderName: contactName,
+                    friendTokens: [activeUserToken],
+                    notificationType: "contact_on_way"
+                )
+            } else {
+                print("ℹ️ Could not fetch active user's FCM token for 'I'm On My Way' notification.")
+            }
+        }
     }
     
     /// Periodically uploads the contact's own location to the session while they are navigating.

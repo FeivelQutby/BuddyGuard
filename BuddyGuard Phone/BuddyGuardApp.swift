@@ -9,14 +9,6 @@ import SwiftUI
 import FirebaseCore
 import GoogleSignIn
 
-// Create the AppDelegate
-class AppDelegate: NSObject, UIApplicationDelegate {
-    func application(_ application: UIApplication,
-                     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
-        FirebaseApp.configure()
-        return true
-    }
-}
 
 @main
 struct BuddyGuardApp: App {
@@ -32,6 +24,7 @@ struct BuddyGuardApp: App {
                 if authManager.isAuthenticated {
                     ContentView()
                         .environment(authManager)
+                        .environment(DeepLinkRouter.shared)
                 } else {
                     LoginView()
                         .onOpenURL { url in

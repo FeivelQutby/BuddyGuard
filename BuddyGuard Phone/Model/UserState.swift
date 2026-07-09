@@ -16,11 +16,19 @@ enum UserState: String{
     var label: String {
         switch self {
         case .OnTheWay: return "On The Way"
-        case .Arrived: return "Arrived"
-        case .Urgent: return "Urgent"
+        case .Arrived: return "Arrived safely"
+        case .Urgent: return "Need help!"
         }
     }
     
+    var iconName: String {
+        switch self {
+        case .OnTheWay: return "clock.fill"
+        case .Arrived: return "checkmark.circle.fill"
+        case .Urgent: return "exclamationmark.triangle.fill"
+        }
+    }
+
     var fillColor: Color {
         switch self {
         case .OnTheWay: return .yellow

@@ -35,6 +35,7 @@ class AuthManager {
             self.currentUser = user
             self.isAuthenticated = (user != nil)
             
+            
             if let activeUser = user {
                 self.saveUserToDatabase(user: activeUser)
             }
