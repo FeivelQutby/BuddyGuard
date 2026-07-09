@@ -186,11 +186,37 @@ struct MapView: View {
                         myStatus = .Urgent
                         liveTrackingManager?.updateStatus(.Urgent)
                         showSOSToast = true
+                        // Notify all emergency contacts that user is in urgent danger
+                        let trackingManager = liveTrackingManager
+                        Task {
+                            let tokens = await EmergencyContactManager().fetchFCMTokensForAlertableContacts()
+                            guard !tokens.isEmpty else { return }
+                            let senderName = Auth.auth().currentUser?.displayName ?? "Your Friend"
+                            trackingManager?.triggerEmergencyAlert(
+                                alertId: trackingManager?.sessionId ?? "",
+                                senderName: senderName,
+                                friendTokens: tokens,
+                                notificationType: "sos"
+                            )
+                        }
                     },
                     onImSafe: {
                         myStatus = .Arrived
                         liveTrackingManager?.updateStatus(.Arrived)
                         showImSafeToast = true
+                        // Notify all emergency contacts that user is safe
+                        let trackingManager = liveTrackingManager
+                        Task {
+                            let tokens = await EmergencyContactManager().fetchFCMTokensForAlertableContacts()
+                            guard !tokens.isEmpty else { return }
+                            let senderName = Auth.auth().currentUser?.displayName ?? "Your Friend"
+                            trackingManager?.triggerEmergencyAlert(
+                                alertId: trackingManager?.sessionId ?? "",
+                                senderName: senderName,
+                                friendTokens: tokens,
+                                notificationType: "im_safe"
+                            )
+                        }
                         DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) { dismiss() }
                     },
                     onImOnMyWay: {
@@ -416,6 +442,26 @@ struct MapView: View {
         
         // 3. Keep contact location updated while navigating
         startContactLocationUpdater(sessionId: sessionId, myUID: myUID)
+        
+        // 4. Send "I'm On My Way" push to the active user
+        let contactName = Auth.auth().currentUser?.displayName ?? "Someone"
+        let activeUserUID = request?.userId ?? ""
+        let alertId = sessionId
+        Task {
+            let contactManager = EmergencyContactManager()
+            if let activeUserToken = await contactManager.fetchTokenForUser(uid: activeUserUID),
+               !activeUserToken.isEmpty {
+                // liveTrackingManager is nil in emergency contact role, so fire directly
+                LiveTrackingManager().triggerEmergencyAlert(
+                    alertId: alertId,
+                    senderName: contactName,
+                    friendTokens: [activeUserToken],
+                    notificationType: "contact_on_way"
+                )
+            } else {
+                print("ℹ️ Could not fetch active user's FCM token for 'I'm On My Way' notification.")
+            }
+        }
     }
     
     /// Periodically uploads the contact's own location to the session while they are navigating.

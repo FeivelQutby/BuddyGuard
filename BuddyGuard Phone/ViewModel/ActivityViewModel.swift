@@ -132,6 +132,7 @@ final class ActivityViewModel {
                         coordinate: coord,
                         state: state,
                         sessionId: sessionId,
+                        userId: userId,
                         destinationName: destName,
                         destinationLatitude: destLat,
                         destinationLongitude: destLng

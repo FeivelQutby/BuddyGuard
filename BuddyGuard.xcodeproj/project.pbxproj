@@ -12,6 +12,7 @@
 		CB53E2402FF7D94000E7DDCC /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = CB53E23F2FF7D94000E7DDCC /* FirebaseCore */; };
 		CB53E2422FF7D94000E7DDCC /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = CB53E2412FF7D94000E7DDCC /* FirebaseFirestore */; };
 		CB56B6CA2FFB6D7B00F3E260 /* GoogleSignIn in Frameworks */ = {isa = PBXBuildFile; productRef = CB56B6C92FFB6D7B00F3E260 /* GoogleSignIn */; };
+		CB59630B2FFE027E00AB6A92 /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = CB59630A2FFE027E00AB6A92 /* FirebaseMessaging */; };
 		E9ECC3B72FFD1F2400CA3470 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = E9ECC3B62FFD1F2400CA3470 /* FirebaseFirestore */; };
 		E9ECC3B92FFD1F4300CA3470 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = E9ECC3B82FFD1F4300CA3470 /* FirebaseAuth */; };
 /* End PBXBuildFile section */
@@ -55,6 +56,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CB59630B2FFE027E00AB6A92 /* FirebaseMessaging in Frameworks */,
 				CB56B6CA2FFB6D7B00F3E260 /* GoogleSignIn in Frameworks */,
 				CB53E23C2FF7D94000E7DDCC /* FirebaseAnalytics in Frameworks */,
 				CB53E2422FF7D94000E7DDCC /* FirebaseFirestore in Frameworks */,
@@ -128,6 +130,7 @@
 				CB53E23F2FF7D94000E7DDCC /* FirebaseCore */,
 				CB53E2412FF7D94000E7DDCC /* FirebaseFirestore */,
 				CB56B6C92FFB6D7B00F3E260 /* GoogleSignIn */,
+				CB59630A2FFE027E00AB6A92 /* FirebaseMessaging */,
 			);
 			productName = BuddyGuard;
 			productReference = 8E7B29642FEE1AE600E8B444 /* BuddyGuard - Safety Companion.app */;
@@ -364,7 +367,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = YES;
-				DEVELOPMENT_TEAM = 3GQRS52F9C;
+				DEVELOPMENT_TEAM = HKS2XN3KMY;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
@@ -388,7 +391,7 @@
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 26.3;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.feivelqutby.BuddyGuard3;
+				PRODUCT_BUNDLE_IDENTIFIER = com.george.BuddyGuard;
 				PRODUCT_NAME = "BuddyGuard - Safety Companion";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				REGISTER_APP_GROUPS = YES;
@@ -416,7 +419,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = YES;
-				DEVELOPMENT_TEAM = 3GQRS52F9C;
+				DEVELOPMENT_TEAM = HKS2XN3KMY;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
@@ -440,7 +443,7 @@
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 26.3;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.feivelqutby.BuddyGuard3;
+				PRODUCT_BUNDLE_IDENTIFIER = com.george.BuddyGuard;
 				PRODUCT_NAME = "BuddyGuard - Safety Companion";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				REGISTER_APP_GROUPS = YES;
@@ -603,6 +606,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = CB56B6C82FFB6D7B00F3E260 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */;
 			productName = GoogleSignIn;
+		};
+		CB59630A2FFE027E00AB6A92 /* FirebaseMessaging */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = CB53E23A2FF7D94000E7DDCC /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseMessaging;
 		};
 		E9ECC3B62FFD1F2400CA3470 /* FirebaseFirestore */ = {
 			isa = XCSwiftPackageProductDependency;

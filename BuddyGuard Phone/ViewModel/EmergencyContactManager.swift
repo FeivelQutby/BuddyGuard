@@ -305,4 +305,61 @@ class EmergencyContactManager {
             print("⚠️ Nickname update failed: \(error.localizedDescription)")
         }
     }
+    
+    // MARK: - 8. Fetch FCM Tokens for Push Notifications
+    
+    /// Fetches FCM tokens for contacts who should receive emergency alerts FROM the current user.
+    /// These are contacts where `canReceiveFrom == true` on the current user's contact record
+    /// (meaning the current user CAN send to them).
+    func fetchFCMTokensForAlertableContacts() async -> [String] {
+        guard let currentUID = Auth.auth().currentUser?.uid else { return [] }
+        
+        do {
+            // Get contacts who can receive alerts from the current user
+            let contactsSnapshot = try await db.collection("users").document(currentUID)
+                .collection("contacts")
+                .whereField("canSendTo", isEqualTo: true)
+                .getDocuments()
+            
+            let contactUIDs = contactsSnapshot.documents.map { $0.documentID }
+            guard !contactUIDs.isEmpty else { return [] }
+            
+            // Fetch each contact's FCM token in parallel
+            var tokens: [String] = []
+            try await withThrowingTaskGroup(of: String?.self) { group in
+                for uid in contactUIDs {
+                    group.addTask {
+                        let doc = try await self.db.collection("users").document(uid).getDocument()
+                        return doc.data()?["fcmToken"] as? String
+                    }
+                }
+                for try await token in group {
+                    if let token = token, !token.isEmpty {
+                        tokens.append(token)
+                    }
+                }
+            }
+            
+            print("✅ Fetched \(tokens.count) FCM token(s) for alert.")
+            return tokens
+        } catch {
+            print("⚠️ Failed to fetch FCM tokens: \(error.localizedDescription)")
+            return []
+        }
+    }
+    
+    /// Fetches the FCM token for a specific user by UID.
+    /// Used when an emergency contact wants to send a "I'm On My Way" notification
+    /// back to the active user who triggered the emergency.
+    func fetchTokenForUser(uid: String) async -> String? {
+        guard !uid.isEmpty else { return nil }
+        do {
+            let doc = try await db.collection("users").document(uid).getDocument()
+            return doc.data()?["fcmToken"] as? String
+        } catch {
+            print("⚠️ Failed to fetch FCM token for user \(uid): \(error.localizedDescription)")
+            return nil
+        }
+    }
 }
+

@@ -8,6 +8,7 @@
 import SwiftUI
 import CoreLocation
 import FirebaseFirestore
+import FirebaseAuth
 
 // MARK: - Emergency View
 struct EmergencyView: View {
@@ -134,6 +135,25 @@ struct EmergencyView: View {
 
                 if let coord = locationManager.coordinate {
                     liveTrackingManager.startSession(coordinate: coord)
+                }
+                
+                // Fire emergency start notification to all alertable contacts
+                let trackingManager = liveTrackingManager
+                Task {
+                    let contactManager = EmergencyContactManager()
+                    let tokens = await contactManager.fetchFCMTokensForAlertableContacts()
+                    guard !tokens.isEmpty else {
+                        print("ℹ️ No alertable contacts with FCM tokens found.")
+                        return
+                    }
+                    let senderName = Auth.auth().currentUser?.displayName ?? "Your Friend"
+                    let alertId = trackingManager.sessionId ?? UUID().uuidString
+                    trackingManager.triggerEmergencyAlert(
+                        alertId: alertId,
+                        senderName: senderName,
+                        friendTokens: tokens,
+                        notificationType: "emergency_start"
+                    )
                 }
             } else {
                 progress = CGFloat(timeElapsed / 3.0)

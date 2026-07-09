@@ -177,4 +177,50 @@ class LiveTrackingManager {
         isActive = false
         self.sessionId = nil
     }
+    
+    func triggerEmergencyAlert(
+        alertId: String,
+        senderName: String,
+        friendTokens: [String],
+        notificationType: String = "emergency_start"
+    ) {
+        // 1. Your Cloudflare Worker URL
+        guard let url = URL(string: "https://buddyguard-push-notif.george-maximillian.workers.dev/") else { return }
+        
+        // 2. Prepare the HTTP POST Request
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        
+        // 3. Package the data Cloudflare needs (including notification type)
+        let body: [String: Any] = [
+            "notificationType": notificationType,
+            "senderId": Auth.auth().currentUser?.uid ?? "Unknown",
+            "alertId": alertId,
+            "senderName": senderName,
+            "friendTokens": friendTokens
+        ]
+        
+        do {
+            request.httpBody = try JSONSerialization.data(withJSONObject: body)
+        } catch {
+            print("Failed to encode JSON: \(error)")
+            return
+        }
+        
+        // 4. Fire the request to Cloudflare
+        URLSession.shared.dataTask(with: request) { data, response, error in
+            if let error = error {
+                print("🚨 Failed to trigger Worker: \(error.localizedDescription)")
+                return
+            }
+            
+            if let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 {
+                print("✅ Emergency triggered successfully! [type: \(notificationType)]")
+            } else if let data = data, let body = String(data: data, encoding: .utf8) {
+                print("⚠️ Worker returned an error: \(body)")
+            }
+        }.resume()
+    }
 }
+
