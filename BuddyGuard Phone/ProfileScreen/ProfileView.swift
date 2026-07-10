@@ -4,9 +4,9 @@ import FirebaseAuth
 struct ProfileView: View {
     @State private var viewModel: ProfileViewModel
     @Environment(AuthManager.self) private var authManager
+    @Environment(DeepLinkRouter.self) private var deepLinkRouter
 
     @State private var showAddContactSheet = false
-    @State private var showInboxSheet = false
     @State private var contactManager = EmergencyContactManager()
 
     init(viewModel: ProfileViewModel = ProfileViewModel()) {
@@ -55,31 +55,12 @@ struct ProfileView: View {
                         .foregroundStyle(.darkActive)
 
                     Spacer()
-
-                    if viewModel.selectedSegment == .contact {
-                        Button(action: { showInboxSheet = true }) {
-                            HStack(spacing: 4) {
-                                Image(systemName: "envelope.badge")
-                                Text("Inbox")
-                                if contactManager.pendingInvitationCount > 0 {
-                                    Text("\(contactManager.pendingInvitationCount)")
-                                        .font(.caption2.weight(.bold))
-                                        .foregroundStyle(.white)
-                                        .padding(.horizontal, 5)
-                                        .padding(.vertical, 2)
-                                        .background(Capsule().fill(.red))
-                                }
-                            }
-                            .font(.subheadline.weight(.medium))
-                        }
-                        .padding(.trailing, 12)
-                    }
                 }
                 .padding(.top, 20)
 
                 switch viewModel.selectedSegment {
                 case .profile:
-                    ProfileInfoSection(authManager: authManager)
+                    ProfileInfoList(authManager: authManager)
                         .padding(.top, 12)
                 case .contact:
                     EmergencyContactList(
@@ -129,13 +110,14 @@ struct ProfileView: View {
                 .presentationDetents([.medium,.large])
                 .presentationDragIndicator(.visible)
         }
-        .sheet(isPresented: $showInboxSheet) {
-            ContactInboxCard()
-                .presentationDetents([.medium,.medium])
-                .presentationDragIndicator(.visible)
-        }
         .onAppear {
             contactManager.startListeningToInbox()
+        }
+        .onChange(of: deepLinkRouter.showContactSection) { _, show in
+            if show {
+                viewModel.selectedSegment = .contact
+                deepLinkRouter.showContactSection = false
+            }
         }
     }
 }
@@ -143,10 +125,12 @@ struct ProfileView: View {
 #Preview("Light Mode") {
     ProfileView()
         .environment(AuthManager())
+        .environment(DeepLinkRouter.shared)
 }
 
 #Preview("Dark Mode") {
     ProfileView()
         .preferredColorScheme(.dark)
         .environment(AuthManager())
+        .environment(DeepLinkRouter.shared)
 }

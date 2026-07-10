@@ -18,16 +18,16 @@ struct EmergencyView: View {
     @State private var timer: Timer?
     @State private var showMap = false
     @State private var lastTickSecond: Int = 0
-
+    
     @State private var showCancelledToast = false
     @State private var showEndedToast = false
-
+    
     @State private var locationManager = LocationManager()
     @State private var liveTrackingManager = LiveTrackingManager()
     
     /// True while we're checking Firestore for a resumable session (avoids flash of empty UI).
     @State private var isCheckingSession = true
-
+    private var viewModel = ProfileViewModel()
     var body: some View {
         
         VStack (spacing: 64) {
@@ -95,7 +95,16 @@ struct EmergencyView: View {
             }
             .animation(.easeInOut(duration: 0.25), value: isPressing)
             
-            Divider().opacity(0)
+            
+            
+            if viewModel.emergencyContacts.isEmpty {
+                NoContact()
+//                Divider().opacity(0)
+            } else {
+//                NoContact()
+                Divider().opacity(0)
+            }
+            
         }
         .frame(maxWidth: .infinity)
         .padding(16)
@@ -156,24 +165,24 @@ struct EmergencyView: View {
         progress = 0.0
         timeElapsed = 0.0
         lastTickSecond = 0
-
+        
         timer = Timer.scheduledTimer(withTimeInterval: 0.01, repeats: true) { _ in
             timeElapsed += 0.01
-
+            
             let currentSecond = Int(timeElapsed)
             if currentSecond > lastTickSecond && currentSecond < 3 {
                 lastTickSecond = currentSecond
                 HapticManager.impact(.light)
             }
-
+            
             if timeElapsed >= 3.0 {
                 timeElapsed = 3.0
                 progress = 1.0
                 timer?.invalidate()
-
+                
                 HapticManager.notification(.success)
                 showMap = true
-
+                
                 if let coord = locationManager.coordinate {
                     liveTrackingManager.startSession(coordinate: coord)
                 }
@@ -204,15 +213,15 @@ struct EmergencyView: View {
     
     private func stopHolding() {
         let wasCancelled = isPressing && timeElapsed < 3.0 && timeElapsed > 0.3
-
+        
         timer?.invalidate()
         timer = nil
-
+        
         if wasCancelled {
             HapticManager.impact(.soft)
             showCancelledToast = true
         }
-
+        
         withAnimation(.easeInOut(duration: 0.25)) {
             isPressing = false
             progress = 0.0
@@ -223,9 +232,11 @@ struct EmergencyView: View {
 
 #Preview("Light") {
     EmergencyView()
+        .environment(DeepLinkRouter.shared)
 }
 
 #Preview("Dark") {
     EmergencyView()
         .preferredColorScheme(.dark)
+        .environment(DeepLinkRouter.shared)
 }

@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct InboxRequestRow: View {
+struct AddContactCard: View {
     let invitation: ContactInvitation
     let manager: EmergencyContactManager
 
@@ -36,21 +36,6 @@ struct InboxRequestRow: View {
 
             HStack(spacing: 12) {
                 Button {
-                    HapticManager.notification(.success)
-                    Task {
-                        await manager.respondToInvitation(invitation, accept: true)
-                    }
-                } label: {
-                    Text("Accept")
-                        .font(.subheadline.bold())
-                        .foregroundStyle(.white)
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 10)
-                        .background(.normalActiveNd)
-                        .clipShape(RoundedRectangle(cornerRadius: 10))
-                }
-
-                Button {
                     HapticManager.impact(.light)
                     Task {
                         await manager.respondToInvitation(invitation, accept: false)
@@ -64,6 +49,21 @@ struct InboxRequestRow: View {
                         .background(.lightD2)
                         .clipShape(RoundedRectangle(cornerRadius: 10))
                 }
+                
+                Button {
+                    HapticManager.notification(.success)
+                    Task {
+                        await manager.respondToInvitation(invitation, accept: true)
+                    }
+                } label: {
+                    Text("Accept")
+                        .font(.subheadline.bold())
+                        .foregroundStyle(.white)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 10)
+                        .background(.normalActiveNd)
+                        .clipShape(RoundedRectangle(cornerRadius: 10))
+                }
             }
             .padding(.top, 4)
         }
@@ -71,4 +71,39 @@ struct InboxRequestRow: View {
         .background(.lightD)
         .clipShape(RoundedRectangle(cornerRadius: 16))
     }
+}
+
+#Preview("Light") {
+    AddContactCard(
+        invitation: ContactInvitation(
+            id: "preview1",
+            senderId: "user1",
+            senderEmail: "maya@example.com",
+            senderName: "Maya",
+            receiverId: "me",
+            senderPermission: .both,
+            status: .pending,
+            timestamp: Date()
+        ),
+        manager: EmergencyContactManager()
+    )
+    .padding(16)
+}
+
+#Preview("Dark") {
+    AddContactCard(
+        invitation: ContactInvitation(
+            id: "preview1",
+            senderId: "user1",
+            senderEmail: "maya@example.com",
+            senderName: "Maya",
+            receiverId: "me",
+            senderPermission: .sendOnly,
+            status: .pending,
+            timestamp: Date()
+        ),
+        manager: EmergencyContactManager()
+    )
+    .padding(16)
+    .preferredColorScheme(.dark)
 }

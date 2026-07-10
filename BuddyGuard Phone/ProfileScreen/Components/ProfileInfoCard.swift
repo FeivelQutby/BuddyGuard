@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct ProfileInfoRow: View {
+struct ProfileInfoCard: View {
     let icon: String
     let title: String
     let value: String
@@ -107,4 +107,23 @@ struct ProfileInfoRow: View {
             }
         }
     }
+}
+
+#Preview("Display Name (Editable)") {
+    ProfileInfoCard(icon: "person.fill", title: "Display Name", value: "Feivel", isEditable: true)
+        .environment(AuthManager())
+        .padding(16)
+}
+
+#Preview("Email (Read-only)") {
+    ProfileInfoCard(icon: "envelope.fill", title: "Email", value: "feivel@example.com")
+        .environment(AuthManager())
+        .padding(16)
+}
+
+#Preview("Dark") {
+    ProfileInfoCard(icon: "person.fill", title: "Display Name", value: "Feivel", isEditable: true)
+        .environment(AuthManager())
+        .padding(16)
+        .preferredColorScheme(.dark)
 }
