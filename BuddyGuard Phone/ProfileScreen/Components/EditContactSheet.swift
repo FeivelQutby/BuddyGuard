@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct SettingsContactSheet: View {
+struct EditContactSheet: View {
     let contact: EmergencyContact
     let contactManager: EmergencyContactManager
 
@@ -24,12 +24,12 @@ struct SettingsContactSheet: View {
             VStack(spacing: 20) {
                 VStack(spacing: 8) {
                     Circle()
-                        .fill(.lightD2)
+                        .fill(.normalActiveNd)
                         .frame(width: 60, height: 60)
                         .overlay(
-                            Text(contact.name.prefix(1).uppercased())
+                            Text(contact.name           .prefix(1).uppercased())
                                 .font(.system(size: 24, weight: .bold))
-                                .foregroundStyle(.darkActive)
+                                .foregroundStyle(.light)
                         )
                     Text(contact.name)
                         .font(.title3.weight(.bold))
@@ -130,6 +130,7 @@ struct SettingsContactSheet: View {
                 }
             } message: {
                 Text("Remove \(contact.displayName) as an emergency contact? This cannot be undone.")
+                    .foregroundStyle(Color(.secondaryLabel))
             }
         }
     }
@@ -154,14 +155,14 @@ struct SettingsContactSheet: View {
 }
 
 #Preview("Light") {
-    SettingsContactSheet(
+    EditContactSheet(
         contact: ProfileViewModel.sampleProfileContacts[0],
         contactManager: EmergencyContactManager()
     )
 }
 
 #Preview("Dark") {
-    SettingsContactSheet(
+    EditContactSheet(
         contact: ProfileViewModel.sampleProfileContacts[0],
         contactManager: EmergencyContactManager()
     )

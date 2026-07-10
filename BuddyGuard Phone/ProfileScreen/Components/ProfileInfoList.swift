@@ -6,12 +6,10 @@ struct ProfileInfoList: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            Divider().background(Color(.systemGray3))
-
             ProfileInfoCard(icon: "person.fill", title: "Display Name", value: authManager.displayName, isEditable: true)
-            Divider().background(Color(.systemGray3))
+            Divider().background(.gray)
             ProfileInfoCard(icon: "envelope.fill", title: "Email", value: authManager.email)
-            Divider().background(Color(.systemGray3))
+            Divider().background(.gray)
             ProfileInfoCard(
                 icon: authManager.currentUser?.providerData.first?.providerID == "google.com" ? "g.circle.fill" : "applelogo",
                 title: "Sign-in Method",

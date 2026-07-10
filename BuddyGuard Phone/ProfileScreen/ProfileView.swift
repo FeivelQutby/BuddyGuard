@@ -18,14 +18,12 @@ struct ProfileView: View {
 
         ZStack(alignment: .bottom) {
             VStack(spacing: 8) {
-
                 Circle()
-                    .foregroundStyle(.lightD2)
-                    .opacity(0.5)
+                    .foregroundStyle(.normalActiveNd)
                     .overlay(
                         Text(authManager.displayName.prefix(1).uppercased())
                             .font(.system(size: 52, weight: .bold))
-                            .foregroundStyle(.darkActive)
+                            .foregroundStyle(.light)
                     )
                     .frame(width: 110, height: 110)
 

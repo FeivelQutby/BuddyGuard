@@ -41,11 +41,13 @@ struct BuddyGuardApp: App {
 
 #Preview("Light Mode") {
     ContentView()
+        .environment(AuthManager())
         .environment(DeepLinkRouter.shared)
 }
 
 #Preview("Dark Mode") {
     ContentView()
         .preferredColorScheme(.dark)
+        .environment(AuthManager())
         .environment(DeepLinkRouter.shared)
 }

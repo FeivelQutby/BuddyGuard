@@ -3,14 +3,14 @@ import SwiftUI
 struct EmergencyContactList: View {
     let contacts: [EmergencyContact]
     let contactManager: EmergencyContactManager
-
+    
     var body: some View {
         VStack(spacing: 12) {
             // Pending invitations at the top
             ForEach(contactManager.incomingInvitations) { invitation in
                 AddContactCard(invitation: invitation, manager: contactManager)
             }
-
+            
             if contacts.isEmpty && contactManager.incomingInvitations.isEmpty {
                 VStack(spacing: 12) {
                     Image(systemName: "person.2.slash")
@@ -24,12 +24,10 @@ struct EmergencyContactList: View {
                 .padding(.top, 32)
             } else if !contacts.isEmpty {
                 VStack(spacing: 0) {
-                    Divider().background(.secondary)
                     ForEach(contacts) { contact in
                         EmergencyContactCard(contact: contact, contactManager: contactManager)
-                        if contact.id != contacts.last?.id {
-                            Divider().background(.secondary)
-                        }
+                        Divider()
+                            .background(.secondary)
                     }
                 }
             }

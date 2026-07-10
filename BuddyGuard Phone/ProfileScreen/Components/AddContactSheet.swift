@@ -23,7 +23,6 @@ struct AddContactSheet: View {
                         .padding()
                         .background(.lightD)
                         .clipShape(RoundedRectangle(cornerRadius: 12))
-                        .foregroundStyle(.darkActive)
                 }
 
                 VStack(alignment: .leading, spacing: 12) {

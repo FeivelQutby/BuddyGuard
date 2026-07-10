@@ -9,11 +9,11 @@ struct EmergencyContactCard: View {
         HStack(spacing: 16) {
             ZStack {
                 Circle()
-                    .fill(.lightD2)
+                    .fill(.normalActiveNd)
                     .frame(width: 44, height: 44)
                 Text(contact.displayName.prefix(1).uppercased())
                     .font(.body.weight(.bold))
-                    .foregroundStyle(.darkActive)
+                    .foregroundStyle(.light)
             }
             VStack(alignment: .leading, spacing: 2) {
                 Text(contact.displayName)
@@ -37,7 +37,7 @@ struct EmergencyContactCard: View {
         }
         .padding(.vertical, 10)
         .sheet(isPresented: $showPermissionSheet) {
-            SettingsContactSheet(contact: contact, contactManager: contactManager)
+            EditContactSheet(contact: contact, contactManager: contactManager)
                 .presentationDetents([.medium])
                 .presentationDragIndicator(.visible)
         }
@@ -59,14 +59,6 @@ struct EmergencyContactCard: View {
     .padding(16)
 }
 
-#Preview("With Nickname") {
-    EmergencyContactCard(
-        contact: EmergencyContact(id: "nick1", name: "Dinda Pratiwi", email: "dinda@example.com", canSendTo: true, canReceiveFrom: true, nickname: "Mom"),
-        contactManager: EmergencyContactManager()
-    )
-    .padding(16)
-}
-
 #Preview("Send & Receive Dark") {
     EmergencyContactCard(
         contact: ProfileViewModel.sampleProfileContacts[0],
@@ -76,10 +68,21 @@ struct EmergencyContactCard: View {
     .preferredColorScheme(.dark)
 }
 
+#Preview("With Nickname") {
+    EmergencyContactCard(
+        contact: EmergencyContact(id: "nick1", name: "Dinda Pratiwi", email: "dinda@example.com", canSendTo: true, canReceiveFrom: true, nickname: "Mom"),
+        contactManager: EmergencyContactManager()
+    )
+    .padding(16)
+}
+
+
+
 #Preview("With Nickname Dark") {
     EmergencyContactCard(
         contact: EmergencyContact(id: "nick1", name: "Dinda Pratiwi", email: "dinda@example.com", canSendTo: true, canReceiveFrom: true, nickname: "Mom"),
         contactManager: EmergencyContactManager()
     )
     .padding(16)
+    .preferredColorScheme(ColorScheme.dark)
 }

@@ -15,12 +15,12 @@ struct ProfileInfoCard: View {
     var body: some View {
         HStack(spacing: 16) {
             Circle()
-                .fill(.lightD2)
+                .fill(.normalActiveNd)
                 .frame(width: 44, height: 44)
                 .overlay(
                     Image(systemName: icon)
                         .font(.body.weight(.semibold))
-                        .foregroundStyle(.darkActive)
+                        .foregroundStyle(.light)
                 )
 
             VStack(alignment: .leading, spacing: 3) {
@@ -29,32 +29,12 @@ struct ProfileInfoCard: View {
                     .foregroundStyle(.secondary)
 
                 if isEditing {
-                    HStack(spacing: 8) {
-                        TextField("Your name", text: $editText)
-                            .font(.body.weight(.semibold))
-                            .foregroundStyle(.darkActive)
-                            .focused($isFocused)
-                            .autocorrectionDisabled()
-                            .onSubmit { save() }
-
-                        if isSaving {
-                            ProgressView()
-                                .controlSize(.small)
-                        } else {
-                            Button { save() } label: {
-                                Image(systemName: "checkmark.circle.fill")
-                                    .font(.title3)
-                                    .foregroundStyle(.normalActiveNd)
-                            }
-                            .disabled(editText.trimmingCharacters(in: .whitespaces).isEmpty)
-
-                            Button { cancelEditing() } label: {
-                                Image(systemName: "xmark.circle.fill")
-                                    .font(.title3)
-                                    .foregroundStyle(.secondary)
-                            }
-                        }
-                    }
+                    TextField("Your name", text: $editText)
+                        .font(.body.weight(.semibold))
+                        .foregroundStyle(.darkActive)
+                        .focused($isFocused)
+                        .autocorrectionDisabled()
+                        .onSubmit { save() }
                 } else {
                     Text(value)
                         .font(.body.weight(.semibold))
@@ -68,6 +48,28 @@ struct ProfileInfoCard: View {
                 Image(systemName: "pencil")
                     .font(.footnote.weight(.semibold))
                     .foregroundStyle(.secondary)
+            }else{
+                HStack(spacing: 8) {
+                    if isSaving {
+                        ProgressView()
+                            .controlSize(.small)
+                    } else {
+                        if icon == "person.fill" {
+                            Button { cancelEditing() } label: {
+                                Image(systemName: "xmark.circle.fill")
+                                    .font(.title3)
+                                    .foregroundStyle(.secondary)
+                            }
+                            
+                            Button { save() } label: {
+                                Image(systemName: "checkmark.circle.fill")
+                                    .font(.title3)
+                                    .foregroundStyle(.normalActiveNd)
+                            }
+                            .disabled(editText.trimmingCharacters(in: .whitespaces).isEmpty)
+                        }
+                    }
+                }
             }
         }
         .contentShape(Rectangle())
