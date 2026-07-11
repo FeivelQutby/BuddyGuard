@@ -56,8 +56,8 @@ struct ProfileView: View {
                     if viewModel.selectedSegment == .contact {
                         Button { showAddContactSheet = true } label: {
                             Image(systemName: "plus")
-                                .font(.body.weight(.semibold))
-                                .foregroundStyle(.normalActiveNd)
+                                .font(.title3.weight(.semibold))
+                                .foregroundStyle(.darkActive)
                         }
                     }
                 }

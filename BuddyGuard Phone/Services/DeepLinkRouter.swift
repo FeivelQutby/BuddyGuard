@@ -34,6 +34,10 @@ final class DeepLinkRouter {
     /// Set to true to navigate to Profile tab → Contact section.
     /// Consumed by ProfileView after switching segment.
     var showContactSection: Bool = false
+
+    /// Set to true by App Intents / Control Center to auto-trigger emergency.
+    /// Consumed by EmergencyView after starting the session.
+    var triggerEmergency: Bool = false
     
     // MARK: - Handle Notification Tap
     

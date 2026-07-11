@@ -40,7 +40,6 @@ struct AddContactSheet: View {
                         }
                     }
                     .pickerStyle(.inline)
-                    .tint(.normalActive)
                     .background(.lightD)
                     .clipShape(RoundedRectangle(cornerRadius: 12))
                 }

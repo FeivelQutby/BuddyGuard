@@ -12,16 +12,18 @@ import FirebaseAuth
 
 // MARK: - Emergency View
 struct EmergencyView: View {
+    @Environment(DeepLinkRouter.self) private var deepLinkRouter
+
     @State private var progress: CGFloat = 0.0
     @State private var timeElapsed: Double = 0.0
     @State private var isPressing = false
     @State private var timer: Timer?
     @State private var showMap = false
     @State private var lastTickSecond: Int = 0
-    
+
     @State private var showCancelledToast = false
     @State private var showEndedToast = false
-    
+
     @State private var locationManager = LocationManager()
     @State private var liveTrackingManager = LiveTrackingManager()
     
@@ -139,6 +141,12 @@ struct EmergencyView: View {
         .onAppear {
             Task { await resumeActiveSessionIfNeeded() }
         }
+        .onChange(of: deepLinkRouter.triggerEmergency) { _, trigger in
+            if trigger {
+                deepLinkRouter.triggerEmergency = false
+                triggerInstantEmergency()
+            }
+        }
     }
     
     // MARK: - Session Resume
@@ -226,6 +234,32 @@ struct EmergencyView: View {
         }
     }
     
+    private func triggerInstantEmergency() {
+        guard !showMap, !liveTrackingManager.isActive else { return }
+
+        HapticManager.notification(.success)
+        showMap = true
+
+        if let coord = locationManager.coordinate {
+            liveTrackingManager.startSession(coordinate: coord)
+        }
+
+        let trackingManager = liveTrackingManager
+        Task {
+            let contactManager = await EmergencyContactManager()
+            let tokens = await contactManager.fetchFCMTokensForAlertableContacts()
+            guard !tokens.isEmpty else { return }
+            let senderName = Auth.auth().currentUser?.displayName ?? "Your Friend"
+            let alertId = await trackingManager.sessionId ?? UUID().uuidString
+            await trackingManager.triggerEmergencyAlert(
+                alertId: alertId,
+                senderName: senderName,
+                friendTokens: tokens,
+                notificationType: "emergency_start"
+            )
+        }
+    }
+
     private func stopHolding() {
         let wasCancelled = isPressing && timeElapsed < 3.0 && timeElapsed > 0.3
         
