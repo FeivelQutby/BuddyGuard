@@ -16,21 +16,44 @@ struct EmptyActivityView: View {
             Divider()
                 .opacity(0)
                 .frame(height:100)
-            VStack(alignment: .leading, spacing: 8) {
+            VStack(alignment: .leading, spacing: 4) {
                 Text("How it works?")
-                    .font(.title3.weight(Font.Weight.semibold))
+                    .font(.body.weight(Font.Weight.semibold))
                     .foregroundStyle(.darkActive)
-                Text("• Your friend or family member will send you a help request when they need you.\n• You will receive the notification and real-time location of them.")
-                    .font(Font.system(.footnote))
+                
+                VStack{
+                    HStack(alignment: .top, spacing: 10) {
+                        Text("•")
+                        Text("Your friend or family member will send you a help request when they need you.")
+                    }
+                    .font(.subheadline)
                     .foregroundStyle(.darkActive)
+                    
+                    HStack(alignment: .top, spacing: 10) {
+                        Text("•")
+                        Text("You will receive the notification and real-time location of them.")
+                    }
+                    .font(.subheadline)
+                    .foregroundStyle(.darkActive)
+                }
             }
             .padding(15)
             .frame(maxWidth: .infinity, alignment: .leading)
             .background(
-                RoundedRectangle(cornerRadius: 8)
+                RoundedRectangle(cornerRadius: 10)
                     .fill(.lightD)
             )
         }
         .padding(16)
     }
 }
+
+#Preview("Light") {
+    EmptyActivityView()
+}
+
+#Preview("Dark") {
+    EmptyActivityView()
+        .preferredColorScheme(.dark)
+}
+

@@ -71,6 +71,7 @@ struct ActivityView: View {
 
 #Preview("Active Requests") {
     ActivityView(viewModel: ActivityViewModel(requests: ActivityViewModel.sampleRequests))
+        .preferredColorScheme(.light)
         .environment(DeepLinkRouter.shared)
 }
 

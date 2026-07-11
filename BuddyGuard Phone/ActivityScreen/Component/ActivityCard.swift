@@ -14,19 +14,19 @@ struct ActivityCard: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            HStack(spacing: 12) {
+            HStack(spacing: 10) {
                 Circle()
-                    .fill(.lightD3)
-                    .frame(width: 52, height: 52)
+                    .fill(.normalActiveNd)
+                    .frame(width: 50, height: 50)
                     .overlay(
-                        Image(systemName: "photo.fill")
-                            .font(.caption)
-                            .foregroundStyle(.darkActive)
+                        Text(request.name.prefix(1).uppercased())
+                            .font(.body.weight(.bold))
+                            .foregroundStyle(.light)
                     )
 
                 VStack(alignment: .leading, spacing: 2) {
                     Text(request.name)
-                        .font(.headline)
+                        .font(.body.weight(.semibold))
                         .foregroundStyle(.darkActive)
                     Text(request.startedAt)
                         .font(.caption)
@@ -43,8 +43,8 @@ struct ActivityCard: View {
                 ),
                 interactionModes: []
             )
-            .frame(height: 136)
-            .clipShape(RoundedRectangle(cornerRadius: 8))
+            .frame(height: 130)
+            .clipShape(RoundedRectangle(cornerRadius: 10))
             .mapControlVisibility(.hidden)
 
             HStack(spacing: 8) {
@@ -59,7 +59,8 @@ struct ActivityCard: View {
             Button(action: onStartTracking) {
                 Text("Start live tracking")
                     .font(.body)
-                    .foregroundStyle(.white)
+                    .fontWeight(.bold)
+                    .foregroundStyle(.light)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 14)
                     .background(.normalActiveNd)
@@ -68,7 +69,7 @@ struct ActivityCard: View {
         }
         .padding(16)
         .background(.lightD)
-        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .clipShape(RoundedRectangle(cornerRadius: 10))
     }
 }
 
