@@ -60,8 +60,23 @@ struct EmergencyView: View {
                     .overlay(
                         Circle()
                             .trim(from: 0.0, to: progress)
-                            .stroke(.darkActive, style: StrokeStyle(lineWidth: 20, lineCap: .round))
+                            .stroke(Color(red: 0x39/255.0, green: 0x32/255.0, blue: 0x8F/255.0), lineWidth: 22)
                             .rotationEffect(.degrees(-90))
+                    )
+                    .overlay(
+                        Circle()
+                            .trim(from: 0.0, to: progress)
+                            .stroke(
+                                LinearGradient(
+                                    colors: [Color(red: 0x61/255.0, green: 0x55/255.0, blue: 0xF5/255.0),
+                                             Color(red: 0x39/255.0, green: 0x32/255.0, blue: 0x8F/255.0)],
+                                    startPoint: .leading,
+                                    endPoint: .trailing
+                                ),
+                                style: StrokeStyle(lineWidth: 20, lineCap: .round)
+                            )
+                            .rotationEffect(.degrees(-90))
+                            .shadow(color: Color(red: 0x61/255.0, green: 0x55/255.0, blue: 0xF5/255.0).opacity(0.6), radius: 10, x: 0, y: 4)
                     )
                     .contentShape(Circle())
                     .gesture(

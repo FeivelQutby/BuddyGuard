@@ -16,8 +16,7 @@ struct ProfileView: View {
     var body: some View {
         @Bindable var viewModel = viewModel
 
-        ZStack(alignment: .bottom) {
-            VStack(spacing: 8) {
+        VStack(spacing: 8) {
                 Circle()
                     .foregroundStyle(.normalActiveNd)
                     .overlay(
@@ -53,6 +52,14 @@ struct ProfileView: View {
                         .foregroundStyle(.darkActive)
 
                     Spacer()
+
+                    if viewModel.selectedSegment == .contact {
+                        Button { showAddContactSheet = true } label: {
+                            Image(systemName: "plus")
+                                .font(.body.weight(.semibold))
+                                .foregroundStyle(.normalActiveNd)
+                        }
+                    }
                 }
                 .padding(.top, 20)
 
@@ -69,40 +76,8 @@ struct ProfileView: View {
 
                 Spacer(minLength: 0)
             }
-            .padding(16)
-            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-
-            if viewModel.selectedSegment == .contact {
-                Button {
-                    showAddContactSheet = true
-                } label: {
-                    Text("Add Emergency Contact")
-                        .font(.title3)
-                        .foregroundStyle(.white)
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 18)
-                        .background(.normalActiveNd)
-                        .clipShape(Capsule())
-                }
-                .padding(.horizontal, 50)
-                .padding(.bottom, 28)
-
-            } else if viewModel.selectedSegment == .profile {
-                Button {
-                    authManager.signOut()
-                } label: {
-                    Text("Log Out")
-                        .font(.title3)
-                        .foregroundStyle(.white)
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 18)
-                        .background(Color.red)
-                        .clipShape(Capsule())
-                }
-                .padding(.horizontal, 50)
-                .padding(.bottom, 28)
-            }
-        }
+        .padding(16)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .sheet(isPresented: $showAddContactSheet) {
             AddContactSheet()
                 .presentationDetents([.medium,.large])

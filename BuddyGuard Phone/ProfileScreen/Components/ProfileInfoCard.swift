@@ -47,7 +47,7 @@ struct ProfileInfoCard: View {
             if isEditable && !isEditing {
                 Image(systemName: "pencil")
                     .font(.footnote.weight(.semibold))
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(.darkActive)
             }else{
                 HStack(spacing: 8) {
                     if isSaving {

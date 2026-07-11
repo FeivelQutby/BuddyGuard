@@ -32,7 +32,7 @@ struct EmergencyContactCard: View {
             Button { showPermissionSheet = true } label: {
                 Image(systemName: "pencil")
                     .font(.body)
-                    .foregroundStyle(.light)
+                    .foregroundStyle(.darkActive)
             }
         }
         .padding(.vertical, 10)

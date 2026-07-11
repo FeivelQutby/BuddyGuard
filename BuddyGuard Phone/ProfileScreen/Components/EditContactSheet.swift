@@ -17,6 +17,7 @@ struct EditContactSheet: View {
         _canSendTo = State(initialValue: contact.canSendTo)
         _canReceiveFrom = State(initialValue: contact.canReceiveFrom)
         _nickname = State(initialValue: contact.nickname ?? "")
+        UINavigationBar.appearance().titleTextAttributes = [.foregroundColor: UIColor.darkActive]
     }
 
     var body: some View {
@@ -99,8 +100,10 @@ struct EditContactSheet: View {
                     } label: {
                         Image(systemName: "xmark")
                             .font(.footnote.weight(.bold))
-                            .foregroundStyle(.secondary)
+                            .foregroundStyle(.light)
                     }
+                    .buttonStyle(.glassProminent)
+                    .tint(.normalActiveNd)
                 }
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
@@ -112,11 +115,12 @@ struct EditContactSheet: View {
                         } else {
                             Text("Save")
                                 .font(.subheadline.weight(.semibold))
-//                                .background(.normalActiveNd)
-                                .foregroundStyle(.secondary)
-                    
+                                .foregroundStyle(.light)
                         }
+                        
                     }
+                    .buttonStyle(.glassProminent)
+                    .tint(.normalActiveNd)
                     .disabled(isSaving)
                 }
             }
