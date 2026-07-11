@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct ProfileInfoRow: View {
+struct ProfileInfoCard: View {
     let icon: String
     let title: String
     let value: String
@@ -15,12 +15,12 @@ struct ProfileInfoRow: View {
     var body: some View {
         HStack(spacing: 16) {
             Circle()
-                .fill(.lightD2)
+                .fill(.normalActiveNd)
                 .frame(width: 44, height: 44)
                 .overlay(
                     Image(systemName: icon)
                         .font(.body.weight(.semibold))
-                        .foregroundStyle(.darkActive)
+                        .foregroundStyle(.light)
                 )
 
             VStack(alignment: .leading, spacing: 3) {
@@ -29,32 +29,12 @@ struct ProfileInfoRow: View {
                     .foregroundStyle(.secondary)
 
                 if isEditing {
-                    HStack(spacing: 8) {
-                        TextField("Your name", text: $editText)
-                            .font(.body.weight(.semibold))
-                            .foregroundStyle(.darkActive)
-                            .focused($isFocused)
-                            .autocorrectionDisabled()
-                            .onSubmit { save() }
-
-                        if isSaving {
-                            ProgressView()
-                                .controlSize(.small)
-                        } else {
-                            Button { save() } label: {
-                                Image(systemName: "checkmark.circle.fill")
-                                    .font(.title3)
-                                    .foregroundStyle(.normalActiveNd)
-                            }
-                            .disabled(editText.trimmingCharacters(in: .whitespaces).isEmpty)
-
-                            Button { cancelEditing() } label: {
-                                Image(systemName: "xmark.circle.fill")
-                                    .font(.title3)
-                                    .foregroundStyle(.secondary)
-                            }
-                        }
-                    }
+                    TextField("Your name", text: $editText)
+                        .font(.body.weight(.semibold))
+                        .foregroundStyle(.darkActive)
+                        .focused($isFocused)
+                        .autocorrectionDisabled()
+                        .onSubmit { save() }
                 } else {
                     Text(value)
                         .font(.body.weight(.semibold))
@@ -67,7 +47,29 @@ struct ProfileInfoRow: View {
             if isEditable && !isEditing {
                 Image(systemName: "pencil")
                     .font(.footnote.weight(.semibold))
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(.darkActive)
+            }else{
+                HStack(spacing: 8) {
+                    if isSaving {
+                        ProgressView()
+                            .controlSize(.small)
+                    } else {
+                        if icon == "person.fill" {
+                            Button { cancelEditing() } label: {
+                                Image(systemName: "xmark.circle.fill")
+                                    .font(.title3)
+                                    .foregroundStyle(.secondary)
+                            }
+                            
+                            Button { save() } label: {
+                                Image(systemName: "checkmark.circle.fill")
+                                    .font(.title3)
+                                    .foregroundStyle(.normalActiveNd)
+                            }
+                            .disabled(editText.trimmingCharacters(in: .whitespaces).isEmpty)
+                        }
+                    }
+                }
             }
         }
         .contentShape(Rectangle())
@@ -107,4 +109,23 @@ struct ProfileInfoRow: View {
             }
         }
     }
+}
+
+#Preview("Display Name (Editable)") {
+    ProfileInfoCard(icon: "person.fill", title: "Display Name", value: "Feivel", isEditable: true)
+        .environment(AuthManager())
+        .padding(16)
+}
+
+#Preview("Email (Read-only)") {
+    ProfileInfoCard(icon: "envelope.fill", title: "Email", value: "feivel@example.com")
+        .environment(AuthManager())
+        .padding(16)
+}
+
+#Preview("Dark") {
+    ProfileInfoCard(icon: "person.fill", title: "Display Name", value: "Feivel", isEditable: true)
+        .environment(AuthManager())
+        .padding(16)
+        .preferredColorScheme(.dark)
 }

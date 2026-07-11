@@ -75,8 +75,8 @@
 			membershipExceptions = (
 				Connect2Watch.swift,
 				Model/UserState.swift,
-				ViewModel/LocationManager.swift,
-				ViewModel/RouteManager.swift,
+				Services/LocationManager.swift,
+				Services/RouteManager.swift,
 			);
 			target = 8E7B297B2FEE1C4A00E8B444 /* BuddyGuard WatchOs Watch App */;
 		};

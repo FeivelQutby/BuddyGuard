@@ -12,6 +12,8 @@ import FirebaseAuth
 
 // MARK: - Emergency View
 struct EmergencyView: View {
+    @Environment(DeepLinkRouter.self) private var deepLinkRouter
+
     @State private var progress: CGFloat = 0.0
     @State private var timeElapsed: Double = 0.0
     @State private var isPressing = false
@@ -27,7 +29,7 @@ struct EmergencyView: View {
     
     /// True while we're checking Firestore for a resumable session (avoids flash of empty UI).
     @State private var isCheckingSession = true
-
+    private var viewModel = ProfileViewModel()
     var body: some View {
         
         VStack (spacing: 64) {
@@ -60,8 +62,23 @@ struct EmergencyView: View {
                     .overlay(
                         Circle()
                             .trim(from: 0.0, to: progress)
-                            .stroke(.darkActive, style: StrokeStyle(lineWidth: 20, lineCap: .round))
+                            .stroke(Color(red: 0x39/255.0, green: 0x32/255.0, blue: 0x8F/255.0), lineWidth: 22)
                             .rotationEffect(.degrees(-90))
+                    )
+                    .overlay(
+                        Circle()
+                            .trim(from: 0.0, to: progress)
+                            .stroke(
+                                LinearGradient(
+                                    colors: [Color(red: 0x61/255.0, green: 0x55/255.0, blue: 0xF5/255.0),
+                                             Color(red: 0x39/255.0, green: 0x32/255.0, blue: 0x8F/255.0)],
+                                    startPoint: .leading,
+                                    endPoint: .trailing
+                                ),
+                                style: StrokeStyle(lineWidth: 20, lineCap: .round)
+                            )
+                            .rotationEffect(.degrees(-90))
+                            .shadow(color: Color(red: 0x61/255.0, green: 0x55/255.0, blue: 0xF5/255.0).opacity(0.6), radius: 10, x: 0, y: 4)
                     )
                     .contentShape(Circle())
                     .gesture(
@@ -95,7 +112,16 @@ struct EmergencyView: View {
             }
             .animation(.easeInOut(duration: 0.25), value: isPressing)
             
-            Divider().opacity(0)
+            
+            
+            if viewModel.emergencyContacts.isEmpty {
+                NoContact()
+//                Divider().opacity(0)
+            } else {
+//                NoContact()
+                Divider().opacity(0)
+            }
+            
         }
         .frame(maxWidth: .infinity)
         .padding(16)
@@ -114,6 +140,12 @@ struct EmergencyView: View {
         // resume the session and re-open MapView automatically.
         .onAppear {
             Task { await resumeActiveSessionIfNeeded() }
+        }
+        .onChange(of: deepLinkRouter.triggerEmergency) { _, trigger in
+            if trigger {
+                deepLinkRouter.triggerEmergency = false
+                triggerInstantEmergency()
+            }
         }
     }
     
@@ -156,24 +188,24 @@ struct EmergencyView: View {
         progress = 0.0
         timeElapsed = 0.0
         lastTickSecond = 0
-
+        
         timer = Timer.scheduledTimer(withTimeInterval: 0.01, repeats: true) { _ in
             timeElapsed += 0.01
-
+            
             let currentSecond = Int(timeElapsed)
             if currentSecond > lastTickSecond && currentSecond < 3 {
                 lastTickSecond = currentSecond
                 HapticManager.impact(.light)
             }
-
+            
             if timeElapsed >= 3.0 {
                 timeElapsed = 3.0
                 progress = 1.0
                 timer?.invalidate()
-
+                
                 HapticManager.notification(.success)
                 showMap = true
-
+                
                 if let coord = locationManager.coordinate {
                     liveTrackingManager.startSession(coordinate: coord)
                 }
@@ -202,17 +234,43 @@ struct EmergencyView: View {
         }
     }
     
+    private func triggerInstantEmergency() {
+        guard !showMap, !liveTrackingManager.isActive else { return }
+
+        HapticManager.notification(.success)
+        showMap = true
+
+        if let coord = locationManager.coordinate {
+            liveTrackingManager.startSession(coordinate: coord)
+        }
+
+        let trackingManager = liveTrackingManager
+        Task {
+            let contactManager = await EmergencyContactManager()
+            let tokens = await contactManager.fetchFCMTokensForAlertableContacts()
+            guard !tokens.isEmpty else { return }
+            let senderName = Auth.auth().currentUser?.displayName ?? "Your Friend"
+            let alertId = await trackingManager.sessionId ?? UUID().uuidString
+            await trackingManager.triggerEmergencyAlert(
+                alertId: alertId,
+                senderName: senderName,
+                friendTokens: tokens,
+                notificationType: "emergency_start"
+            )
+        }
+    }
+
     private func stopHolding() {
         let wasCancelled = isPressing && timeElapsed < 3.0 && timeElapsed > 0.3
-
+        
         timer?.invalidate()
         timer = nil
-
+        
         if wasCancelled {
             HapticManager.impact(.soft)
             showCancelledToast = true
         }
-
+        
         withAnimation(.easeInOut(duration: 0.25)) {
             isPressing = false
             progress = 0.0
@@ -223,9 +281,11 @@ struct EmergencyView: View {
 
 #Preview("Light") {
     EmergencyView()
+        .environment(DeepLinkRouter.shared)
 }
 
 #Preview("Dark") {
     EmergencyView()
         .preferredColorScheme(.dark)
+        .environment(DeepLinkRouter.shared)
 }

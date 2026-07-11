@@ -6,6 +6,10 @@ struct AddContactSheet: View {
 
     @State private var email: String = ""
     @State private var selectedPermission: InvitationPermission = .both
+    init() {
+            UINavigationBar.appearance().titleTextAttributes = [.foregroundColor: UIColor.darkActive]
+
+        }
 
     var body: some View {
         NavigationStack {
@@ -23,7 +27,6 @@ struct AddContactSheet: View {
                         .padding()
                         .background(.lightD)
                         .clipShape(RoundedRectangle(cornerRadius: 12))
-                        .foregroundStyle(.darkActive)
                 }
 
                 VStack(alignment: .leading, spacing: 12) {
@@ -37,7 +40,6 @@ struct AddContactSheet: View {
                         }
                     }
                     .pickerStyle(.inline)
-                    .tint(.normalActive)
                     .background(.lightD)
                     .clipShape(RoundedRectangle(cornerRadius: 12))
                 }
@@ -88,11 +90,10 @@ struct AddContactSheet: View {
                     } label: {
                         Image(systemName: "xmark")
                             .font(.footnote.weight(.bold))
-                            .foregroundStyle(.secondary)
-                            .padding(8)
-                            .background(.lightD2)
-                            .clipShape(Circle())
+                            .foregroundStyle(.light)
                     }
+                    .buttonStyle(.glassProminent)
+                    .tint(.normalActiveNd)
                 }
             }
         }

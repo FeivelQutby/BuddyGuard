@@ -71,17 +71,22 @@ struct ActivityView: View {
 
 #Preview("Active Requests") {
     ActivityView(viewModel: ActivityViewModel(requests: ActivityViewModel.sampleRequests))
+        .preferredColorScheme(.light)
+        .environment(DeepLinkRouter.shared)
 }
 
 #Preview("Active Requests Dark") {
     ActivityView(viewModel: ActivityViewModel(requests: ActivityViewModel.sampleRequests))
         .preferredColorScheme(.dark)
+        .environment(DeepLinkRouter.shared)
 }
 
 #Preview("Empty State") {
     ActivityView(viewModel: ActivityViewModel(requests: []))
+        .environment(DeepLinkRouter.shared)
 }
 #Preview("Empty State Dark") {
     ActivityView(viewModel: ActivityViewModel(requests: []))
         .preferredColorScheme(.dark)
+        .environment(DeepLinkRouter.shared)
 }

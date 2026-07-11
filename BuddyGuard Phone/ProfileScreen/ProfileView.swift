@@ -4,9 +4,9 @@ import FirebaseAuth
 struct ProfileView: View {
     @State private var viewModel: ProfileViewModel
     @Environment(AuthManager.self) private var authManager
+    @Environment(DeepLinkRouter.self) private var deepLinkRouter
 
     @State private var showAddContactSheet = false
-    @State private var showInboxSheet = false
     @State private var contactManager = EmergencyContactManager()
 
     init(viewModel: ProfileViewModel = ProfileViewModel()) {
@@ -16,16 +16,13 @@ struct ProfileView: View {
     var body: some View {
         @Bindable var viewModel = viewModel
 
-        ZStack(alignment: .bottom) {
-            VStack(spacing: 8) {
-
+        VStack(spacing: 8) {
                 Circle()
-                    .foregroundStyle(.lightD2)
-                    .opacity(0.5)
+                    .foregroundStyle(.normalActiveNd)
                     .overlay(
                         Text(authManager.displayName.prefix(1).uppercased())
                             .font(.system(size: 52, weight: .bold))
-                            .foregroundStyle(.darkActive)
+                            .foregroundStyle(.light)
                     )
                     .frame(width: 110, height: 110)
 
@@ -57,29 +54,18 @@ struct ProfileView: View {
                     Spacer()
 
                     if viewModel.selectedSegment == .contact {
-                        Button(action: { showInboxSheet = true }) {
-                            HStack(spacing: 4) {
-                                Image(systemName: "envelope.badge")
-                                Text("Inbox")
-                                if contactManager.pendingInvitationCount > 0 {
-                                    Text("\(contactManager.pendingInvitationCount)")
-                                        .font(.caption2.weight(.bold))
-                                        .foregroundStyle(.white)
-                                        .padding(.horizontal, 5)
-                                        .padding(.vertical, 2)
-                                        .background(Capsule().fill(.red))
-                                }
-                            }
-                            .font(.subheadline.weight(.medium))
+                        Button { showAddContactSheet = true } label: {
+                            Image(systemName: "plus")
+                                .font(.title3.weight(.semibold))
+                                .foregroundStyle(.darkActive)
                         }
-                        .padding(.trailing, 12)
                     }
                 }
                 .padding(.top, 20)
 
                 switch viewModel.selectedSegment {
                 case .profile:
-                    ProfileInfoSection(authManager: authManager)
+                    ProfileInfoList(authManager: authManager)
                         .padding(.top, 12)
                 case .contact:
                     EmergencyContactList(
@@ -90,52 +76,21 @@ struct ProfileView: View {
 
                 Spacer(minLength: 0)
             }
-            .padding(16)
-            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-
-            if viewModel.selectedSegment == .contact {
-                Button {
-                    showAddContactSheet = true
-                } label: {
-                    Text("Add Emergency Contact")
-                        .font(.title3)
-                        .foregroundStyle(.white)
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 18)
-                        .background(.normalActiveNd)
-                        .clipShape(Capsule())
-                }
-                .padding(.horizontal, 50)
-                .padding(.bottom, 28)
-
-            } else if viewModel.selectedSegment == .profile {
-                Button {
-                    authManager.signOut()
-                } label: {
-                    Text("Log Out")
-                        .font(.title3)
-                        .foregroundStyle(.white)
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 18)
-                        .background(Color.red)
-                        .clipShape(Capsule())
-                }
-                .padding(.horizontal, 50)
-                .padding(.bottom, 28)
-            }
-        }
+        .padding(16)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .sheet(isPresented: $showAddContactSheet) {
             AddContactSheet()
                 .presentationDetents([.medium,.large])
                 .presentationDragIndicator(.visible)
         }
-        .sheet(isPresented: $showInboxSheet) {
-            ContactInboxCard()
-                .presentationDetents([.medium,.medium])
-                .presentationDragIndicator(.visible)
-        }
         .onAppear {
             contactManager.startListeningToInbox()
+        }
+        .onChange(of: deepLinkRouter.showContactSection) { _, show in
+            if show {
+                viewModel.selectedSegment = .contact
+                deepLinkRouter.showContactSection = false
+            }
         }
     }
 }
@@ -143,10 +98,12 @@ struct ProfileView: View {
 #Preview("Light Mode") {
     ProfileView()
         .environment(AuthManager())
+        .environment(DeepLinkRouter.shared)
 }
 
 #Preview("Dark Mode") {
     ProfileView()
         .preferredColorScheme(.dark)
         .environment(AuthManager())
+        .environment(DeepLinkRouter.shared)
 }

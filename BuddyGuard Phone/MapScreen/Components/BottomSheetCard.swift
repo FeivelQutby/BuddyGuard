@@ -20,6 +20,11 @@ struct BottomSheetCard: View{
                 Text("ETA \(routeManager.eta ?? "...") (\(routeManager.distance ?? "...") km)")
                     .font(.system(size: 12))
             }
+            .frame(maxWidth: .infinity)
+            .contentShape(Rectangle())
+            .onTapGesture {
+                withAnimation { sheetDetent = .height(350) }
+            }
         }else if sheetDetent == .height(350){
             switch role {
             case .emergencyContact:

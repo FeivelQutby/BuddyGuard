@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct EmergencyContactRow: View {
+struct EmergencyContactCard: View {
     let contact: EmergencyContact
     let contactManager: EmergencyContactManager
     @State private var showPermissionSheet = false
@@ -9,11 +9,11 @@ struct EmergencyContactRow: View {
         HStack(spacing: 16) {
             ZStack {
                 Circle()
-                    .fill(.lightD2)
+                    .fill(.normalActiveNd)
                     .frame(width: 44, height: 44)
                 Text(contact.displayName.prefix(1).uppercased())
                     .font(.body.weight(.bold))
-                    .foregroundStyle(.darkActive)
+                    .foregroundStyle(.light)
             }
             VStack(alignment: .leading, spacing: 2) {
                 Text(contact.displayName)
@@ -30,14 +30,16 @@ struct EmergencyContactRow: View {
             }
             Spacer()
             Button { showPermissionSheet = true } label: {
-                Image(systemName: "slider.horizontal.3")
+                Image(systemName: "pencil")
                     .font(.body)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(.darkActive)
             }
         }
         .padding(.vertical, 10)
         .sheet(isPresented: $showPermissionSheet) {
-            ContactPermissionSheet(contact: contact, contactManager: contactManager)
+            EditContactSheet(contact: contact, contactManager: contactManager)
+                .presentationDetents([.medium])
+                .presentationDragIndicator(.visible)
         }
     }
 
@@ -47,4 +49,40 @@ struct EmergencyContactRow: View {
         else if contact.canReceiveFrom { return "Receive Only" }
         else { return "No Permissions" }
     }
+}
+
+#Preview("Send & Receive") {
+    EmergencyContactCard(
+        contact: ProfileViewModel.sampleProfileContacts[0],
+        contactManager: EmergencyContactManager()
+    )
+    .padding(16)
+}
+
+#Preview("Send & Receive Dark") {
+    EmergencyContactCard(
+        contact: ProfileViewModel.sampleProfileContacts[0],
+        contactManager: EmergencyContactManager()
+    )
+    .padding(16)
+    .preferredColorScheme(.dark)
+}
+
+#Preview("With Nickname") {
+    EmergencyContactCard(
+        contact: EmergencyContact(id: "nick1", name: "Dinda Pratiwi", email: "dinda@example.com", canSendTo: true, canReceiveFrom: true, nickname: "Mom"),
+        contactManager: EmergencyContactManager()
+    )
+    .padding(16)
+}
+
+
+
+#Preview("With Nickname Dark") {
+    EmergencyContactCard(
+        contact: EmergencyContact(id: "nick1", name: "Dinda Pratiwi", email: "dinda@example.com", canSendTo: true, canReceiveFrom: true, nickname: "Mom"),
+        contactManager: EmergencyContactManager()
+    )
+    .padding(16)
+    .preferredColorScheme(ColorScheme.dark)
 }

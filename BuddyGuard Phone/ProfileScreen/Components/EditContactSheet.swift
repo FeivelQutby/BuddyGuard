@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct ContactPermissionSheet: View {
+struct EditContactSheet: View {
     let contact: EmergencyContact
     let contactManager: EmergencyContactManager
 
@@ -17,37 +17,37 @@ struct ContactPermissionSheet: View {
         _canSendTo = State(initialValue: contact.canSendTo)
         _canReceiveFrom = State(initialValue: contact.canReceiveFrom)
         _nickname = State(initialValue: contact.nickname ?? "")
+        UINavigationBar.appearance().titleTextAttributes = [.foregroundColor: UIColor.darkActive]
     }
 
     var body: some View {
         NavigationStack {
-            VStack(spacing: 24) {
+            VStack(spacing: 20) {
                 VStack(spacing: 8) {
                     Circle()
-                        .fill(.lightD2)
-                        .frame(width: 72, height: 72)
+                        .fill(.normalActiveNd)
+                        .frame(width: 60, height: 60)
                         .overlay(
-                            Text(contact.name.prefix(1).uppercased())
-                                .font(.system(size: 30, weight: .bold))
-                                .foregroundStyle(.darkActive)
+                            Text(contact.name           .prefix(1).uppercased())
+                                .font(.system(size: 24, weight: .bold))
+                                .foregroundStyle(.light)
                         )
-                        .padding(.top, 16)
                     Text(contact.name)
-                        .font(.title2.weight(.bold))
+                        .font(.title3.weight(.bold))
                         .foregroundStyle(.darkActive)
                     Text(contact.email)
-                        .font(.subheadline)
+                        .font(.caption)
                         .foregroundStyle(.secondary)
                 }
 
-                VStack(alignment: .leading, spacing: 8) {
+                VStack(alignment: .leading, spacing: 6) {
                     Text("Nickname (optional)")
-                        .font(.subheadline.weight(.semibold))
+                        .font(.caption.weight(.semibold))
                         .foregroundStyle(.secondary)
                     TextField("e.g. Mom, BFF, Partner", text: $nickname)
-                        .padding()
-                        .background(.lightD2)
-                        .clipShape(RoundedRectangle(cornerRadius: 12))
+                        .padding(12)
+                        .background(.lightD)
+                        .clipShape(RoundedRectangle(cornerRadius: 10))
                         .autocorrectionDisabled()
                         .foregroundStyle(.darkActive)
                 }
@@ -55,66 +55,34 @@ struct ContactPermissionSheet: View {
 
                 VStack(spacing: 0) {
                     Toggle(isOn: $canSendTo) {
-                        VStack(alignment: .leading, spacing: 3) {
+                        VStack(alignment: .leading, spacing: 2) {
                             Text("Send My Alerts")
-                                .font(.body.weight(.medium))
+                                .font(.subheadline.weight(.medium))
                                 .foregroundStyle(.darkActive)
                             Text("They can see your live location")
-                                .font(.caption).foregroundStyle(.secondary)
+                                .font(.caption2).foregroundStyle(.secondary)
                         }
                     }
                     .tint(.normalActiveNd)
-                    .padding(.vertical, 12).padding(.horizontal, 16)
+                    .padding(.vertical, 10).padding(.horizontal, 16)
 
                     Divider().padding(.leading, 16)
 
                     Toggle(isOn: $canReceiveFrom) {
-                        VStack(alignment: .leading, spacing: 3) {
+                        VStack(alignment: .leading, spacing: 2) {
                             Text("Receive Their Alerts")
-                                .font(.body.weight(.medium))
+                                .font(.subheadline.weight(.medium))
                                 .foregroundStyle(.darkActive)
                             Text("You can see their live location")
-                                .font(.caption).foregroundStyle(.secondary)
+                                .font(.caption2).foregroundStyle(.secondary)
                         }
                     }
                     .tint(.normalActiveNd)
-                    .padding(.vertical, 12).padding(.horizontal, 16)
+                    .padding(.vertical, 10).padding(.horizontal, 16)
                 }
-                .background(.lightD2)
-                .clipShape(RoundedRectangle(cornerRadius: 12))
+                .background(.lightD)
+                .clipShape(RoundedRectangle(cornerRadius: 10))
                 .padding(.horizontal, 16)
-
-                Spacer()
-
-                Button {
-                    isSaving = true
-                    Task {
-                        async let p1: () = contactManager.updateContactPermission(
-                            contactUID: contact.id,
-                            canSendTo: canSendTo,
-                            canReceiveFrom: canReceiveFrom
-                        )
-                        async let p2: () = contactManager.updateNickname(
-                            contactUID: contact.id,
-                            nickname: nickname.isEmpty ? nil : nickname
-                        )
-                        _ = await (p1, p2)
-                        isSaving = false
-                        dismiss()
-                    }
-                } label: {
-                    HStack {
-                        if isSaving { ProgressView().tint(.white).padding(.trailing, 6) }
-                        Text("Save Changes").font(.headline)
-                    }
-                    .foregroundStyle(.white)
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 16)
-                    .background(.normalActiveNd)
-                    .clipShape(Capsule())
-                }
-                .padding(.horizontal, 24)
-                .disabled(isSaving)
 
                 Button(role: .destructive) {
                     showDeleteConfirmation = true
@@ -122,22 +90,38 @@ struct ContactPermissionSheet: View {
                     Text("Remove Contact")
                         .font(.subheadline.weight(.medium))
                 }
-                .padding(.bottom, 24)
             }
             .navigationTitle("Edit Contact")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
+                ToolbarItem(placement: .topBarLeading) {
                     Button {
                         dismiss()
                     } label: {
                         Image(systemName: "xmark")
                             .font(.footnote.weight(.bold))
-                            .foregroundStyle(.secondary)
-                            .padding(8)
-                            .background(.lightD2)
-                            .clipShape(Circle())
+                            .foregroundStyle(.light)
                     }
+                    .buttonStyle(.glassProminent)
+                    .tint(.normalActiveNd)
+                }
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
+                        save()
+                    } label: {
+                        if isSaving {
+                            ProgressView()
+                                .controlSize(.small)
+                        } else {
+                            Text("Save")
+                                .font(.subheadline.weight(.semibold))
+                                .foregroundStyle(.light)
+                        }
+                        
+                    }
+                    .buttonStyle(.glassProminent)
+                    .tint(.normalActiveNd)
+                    .disabled(isSaving)
                 }
             }
             .alert("Remove Contact", isPresented: $showDeleteConfirmation) {
@@ -150,7 +134,41 @@ struct ContactPermissionSheet: View {
                 }
             } message: {
                 Text("Remove \(contact.displayName) as an emergency contact? This cannot be undone.")
+                    .foregroundStyle(Color(.secondaryLabel))
             }
         }
     }
+
+    private func save() {
+        isSaving = true
+        Task {
+            async let p1: () = contactManager.updateContactPermission(
+                contactUID: contact.id,
+                canSendTo: canSendTo,
+                canReceiveFrom: canReceiveFrom
+            )
+            async let p2: () = contactManager.updateNickname(
+                contactUID: contact.id,
+                nickname: nickname.isEmpty ? nil : nickname
+            )
+            _ = await (p1, p2)
+            isSaving = false
+            dismiss()
+        }
+    }
+}
+
+#Preview("Light") {
+    EditContactSheet(
+        contact: ProfileViewModel.sampleProfileContacts[0],
+        contactManager: EmergencyContactManager()
+    )
+}
+
+#Preview("Dark") {
+    EditContactSheet(
+        contact: ProfileViewModel.sampleProfileContacts[0],
+        contactManager: EmergencyContactManager()
+    )
+    .preferredColorScheme(.dark)
 }
