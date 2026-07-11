@@ -16,6 +16,8 @@ struct DirectionView: View {
     @State private var safeDestinationCoordinate: CLLocationCoordinate2D?
     @State private var lastRouteFetchLocation: CLLocation? = nil
     @State private var lastRouteFetchTime: Date = .distantPast
+    @State private var showArriveConfirmation: Bool = false
+    @Binding var showDirection: Bool
     
     var body: some View {
         Map(position: $locationManager.camera){
@@ -42,12 +44,14 @@ struct DirectionView: View {
                 )
             }
             
-        }.onAppear {
+        }
+        .onAppear {
             locationManager.requestLocationPermission()
         }
         .task {
             // Active user: find safe place and draw route
             if let coord = locationManager.coordinate {
+                WatchConnector.shared.sendStartSession(with: coord)
                 await fetchRoute(from: coord)
             }
         }
@@ -101,6 +105,12 @@ struct DirectionView: View {
                 )
             }
         }
+        .overlay(alignment: .bottomTrailing) {
+            BottomFloatingToolBar().padding(.trailing, 15)
+        }
+        .navigationDestination(isPresented: $showArriveConfirmation){
+            ArriveConfirmationView(showDirection: $showDirection, showArriveConfirmation: $showArriveConfirmation).navigationBarBackButtonHidden()
+        }
     }
     
     private func fetchRoute(from myCoordinate: CLLocationCoordinate2D) async {
@@ -111,7 +121,8 @@ struct DirectionView: View {
                 safeDestinationCoordinate = safePlace.location.coordinate
                 routeManager.safePlaceName = placeName
                 routeManager.safePlaceAddress = "Nearby Secure Zone"
-//                liveTrackingManager?.updateDestination(name: placeName, coordinate: safePlace.location.coordinate)
+//               liveTrackingManager?.updateDestination(name: placeName, coordinate: safePlace.location.coordinate)
+                WatchConnector.shared.sendUpdateDestination(name: placeName, coordinate: safePlace.location.coordinate)
                 print("✅ Found safe place: \(placeName) synced to RouteManager + Firestore")
             } else {
                 let warningMessage = "No safe places nearby. Stay alert."
@@ -165,6 +176,7 @@ struct DirectionView: View {
     private func handleLocationChange(_ newCoord: CLLocationCoordinate2D) {
 //        liveTrackingManager?.uploadLocation(newCoord)
         routeManager.updateCurrentStep(location: newCoord)
+        WatchConnector.shared.sendUploadLocation(with: newCoord)
         let newLocation = CLLocation(latitude: newCoord.latitude, longitude: newCoord.longitude)
         let timePassed = Date().timeIntervalSince(lastRouteFetchTime)
         guard timePassed >= 10.0 else { return }
@@ -173,8 +185,16 @@ struct DirectionView: View {
         }
         lastRouteFetchLocation = newLocation
         lastRouteFetchTime = Date()
-        Task { await fetchRoute(from: newCoord) }
+        Task {
+            await fetchRoute(from: newCoord)
+        }
         
+        if let destCoord = safeDestinationCoordinate{
+            let destinationCLL = CLLocation(latitude: destCoord.latitude, longitude: destCoord.longitude)
+            if destinationCLL.distance(from: newLocation) < 20 {
+                showArriveConfirmation = true
+            }
+        }
     }
     
     private func iconName(for instructions: String) -> String{
@@ -213,13 +233,43 @@ struct DirectionView: View {
         }
     }
     
-//    @ViewBuilder{
-//        
-//    }
+    @ViewBuilder
+    func BottomFloatingToolBar() -> some View {
+        VStack(spacing: 15){
+            Image(systemName: "location.north.line.fill").rotationEffect(.degrees(-locationManager.heading))
+            
+            Button {
+                withAnimation {
+                    let target = locationManager.coordinate
+                    let locationHeading = locationManager.heading
+                    if let coord = target {
+                        locationManager.camera = .camera(
+                            MapCamera(
+                                centerCoordinate: coord,
+                                distance: 300,
+                                heading: locationHeading,
+                                pitch: 60
+                            )
+                        )
+                    }
+                }
+            } label: {
+                Image(systemName: "location.fill")
+                    .frame(width: 15, height: 15)
+                    .tint(.white)
+            }.frame(width: 35, height: 35)
+        }
+        .buttonStyle(.borderedProminent)
+        .buttonBorderShape(.circle)
+        .controlSize(.large)
+        .offset(y: -20)
+        .tint(.ungu)
+    }
 }
 
 #Preview {
-    DirectionView()
+    @State var showDirection: Bool = true
+    DirectionView(showDirection: $showDirection)
 }
 
 extension CLLocationCoordinate2D: @retroactive Equatable {

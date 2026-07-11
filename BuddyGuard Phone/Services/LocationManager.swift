@@ -14,8 +14,8 @@ import SwiftUI // Replaced _MapKit_SwiftUI with standard SwiftUI
 class LocationManager: NSObject, CLLocationManagerDelegate {
     var coordinate: CLLocationCoordinate2D?
     var camera: MapCameraPosition = .automatic
-    var updateCamera = false
     var showPin = true
+    var heading: CLLocationDirection = 0
     
     // Make the manager private so we don't accidentally mess with it outside this class
     private var manager: CLLocationManager = CLLocationManager()
@@ -35,6 +35,9 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
         // Always start updating if we already have permission
         if manager.authorizationStatus == .authorizedWhenInUse || manager.authorizationStatus == .authorizedAlways {
             manager.startUpdatingLocation()
+            if CLLocationManager.headingAvailable(){
+                manager.startUpdatingHeading()
+            }
         }
     }
     
@@ -42,6 +45,9 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
     func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
         if manager.authorizationStatus == .authorizedWhenInUse || manager.authorizationStatus == .authorizedAlways {
             manager.startUpdatingLocation()
+            if CLLocationManager.headingAvailable(){
+                manager.startUpdatingHeading()
+            }
         }
     }
     
@@ -58,9 +64,25 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
         print("Lokasi masuk: \(latestLocation.coordinate.latitude), \(latestLocation.coordinate.longitude)")
         
         coordinate = latestLocation.coordinate
-        updateCamera = true
         showPin = true
-        camera = .region(.init(center: latestLocation.coordinate, latitudinalMeters: 1000, longitudinalMeters: 1000))
+        updateCamera()
+    }
+    
+    func locationManager(_ manager: CLLocationManager, didUpdateHeading newHeading: CLHeading) {
+        heading = newHeading.trueHeading >= 0 ? newHeading.trueHeading : newHeading.magneticHeading
+        updateCamera()
+    }
+    
+    private func updateCamera(){
+        guard let coord = coordinate else { return }
+        camera = .camera(
+            MapCamera(
+                centerCoordinate: coord,
+                distance: 300,
+                heading: heading,
+                pitch: 60
+            )
+        )
     }
 }
 
