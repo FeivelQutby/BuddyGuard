@@ -105,3 +105,4 @@ struct ActiveUserDetail: View {
         .frame(maxHeight: .infinity, alignment: .top)
     }
 }
+

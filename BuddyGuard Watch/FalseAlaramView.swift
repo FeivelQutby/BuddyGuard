@@ -12,10 +12,11 @@ struct FalseAlaramView: View {
     @State private var isSOSPresented: Bool = false
     @State private var isFalseAlarm: Bool = false
     @Binding var showDirection: Bool
+    let routeManager = RouteManager()
     var body: some View {
         ZStack{
             VStack(){
-                Text("False Alarm?").fontWeight(.semibold).padding(.bottom, 10)
+                Text("Are you safe?").fontWeight(.semibold).padding(.bottom, 10)
     
                 Button{
                     isYesPresented.toggle()
@@ -47,7 +48,7 @@ struct FalseAlaramView: View {
         
     
     var overlayETA: some View{
-        Text("ETA 22.00").foregroundColor(Color.blue).padding(.top, 35).padding(.trailing, 15)
+        Text("ETA \(routeManager.eta ?? "...")").foregroundColor(Color.blue).padding(.top, 35).padding(.trailing, 15)
     }
     
     var backgroundGradient: some View{
@@ -69,6 +70,7 @@ struct FalseAlaramView: View {
                 Button{
                     isFalseAlarm.toggle()
                     showDirection.toggle()
+                    WatchConnector.shared.sendUpdateStatus(.Arrived)
                 }label:{
                     Text("Yes")
                 }

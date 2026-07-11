@@ -73,6 +73,7 @@
 		E9ECC3B32FFD01CC00CA3470 /* Exceptions for "BuddyGuard Phone" folder in "BuddyGuard WatchOs Watch App" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
+				Connect2Watch.swift,
 				Model/UserState.swift,
 				ViewModel/LocationManager.swift,
 				ViewModel/RouteManager.swift,
@@ -510,7 +511,7 @@
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 26.3;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.feivelqutby.BuddyGuard4;
+				PRODUCT_BUNDLE_IDENTIFIER = joyce.com.BuddyGuard;
 				PRODUCT_NAME = "BuddyGuard - Safety Companion";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				REGISTER_APP_GROUPS = YES;
@@ -562,7 +563,7 @@
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 26.3;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.feivelqutby.BuddyGuard4;
+				PRODUCT_BUNDLE_IDENTIFIER = joyce.com.BuddyGuard;
 				PRODUCT_NAME = "BuddyGuard - Safety Companion";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				REGISTER_APP_GROUPS = YES;
@@ -595,13 +596,13 @@
 				INFOPLIST_KEY_CFBundleDisplayName = "BuddyGuard WatchOs";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "BuddyGuard needs your location to send for help during an emergency.";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
-				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = com.feivelqutby.BuddyGuard4;
+				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = joyce.com.BuddyGuard;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.feivelqutby.BuddyGuard4.watchApp;
+				PRODUCT_BUNDLE_IDENTIFIER = joyce.com.BuddyGuard.watchApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
@@ -631,13 +632,13 @@
 				INFOPLIST_KEY_CFBundleDisplayName = "BuddyGuard WatchOs";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "BuddyGuard needs your location to send for help during an emergency.";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
-				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = com.feivelqutby.BuddyGuard;
+				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = joyce.com.BuddyGuard;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.feivelqutby.BuddyGuard4.watchApp;
+				PRODUCT_BUNDLE_IDENTIFIER = joyce.com.BuddyGuard.watchApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
@@ -672,7 +673,7 @@
 					"@executable_path/../../../../Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.feivelqutby.BuddyGuard4.watchApp.WatchWidgetBG;
+				PRODUCT_BUNDLE_IDENTIFIER = joyce.com.BuddyGuard.watchApp.WatchWidgetBG;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
@@ -705,7 +706,7 @@
 					"@executable_path/../../../../Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.feivelqutby.BuddyGuard4.watchApp.WatchWidgetBG;
+				PRODUCT_BUNDLE_IDENTIFIER = joyce.com.BuddyGuard.watchApp.WatchWidgetBG;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
