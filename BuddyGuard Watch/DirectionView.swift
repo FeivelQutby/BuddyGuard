@@ -61,17 +61,10 @@ struct DirectionView: View {
         }
         .navigationBarBackButtonHidden()
         .toolbar{
-            ToolbarItem(placement: .cancellationAction){
-                Button{
-                    
-                }label: {
-                    Image(systemName: "xmark")
-                }
-            }
             
             ToolbarItem(placement: .topBarTrailing){
                 Button{
-                    
+                    WatchConnector.shared.sendUpdateStatus(.Urgent)
                 }label:{
                     Text("SOS").font(.system(size: 10, weight: .semibold));
                 }
@@ -82,7 +75,7 @@ struct DirectionView: View {
         }
         .overlay(alignment: .top){
             VStack{
-                Text("ETA 22.00").foregroundColor(Color.blue)
+                Text("ETA \(routeManager.eta ?? "")").foregroundColor(Color.blue)
             }.padding(35)
         }
         .ignoresSafeArea()

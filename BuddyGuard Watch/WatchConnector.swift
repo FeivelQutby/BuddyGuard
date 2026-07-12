@@ -24,7 +24,7 @@ class WatchConnector: NSObject, WCSessionDelegate {
         
     }
     
-    func sendStartSession(with coordinate: CLLocationCoordinate2D) { //tujuan awal
+    func sendStartSession(with coordinate: CLLocationCoordinate2D) {
         session.transferUserInfo([
             "action": "startSession",
             "latitude": coordinate.latitude,
@@ -32,7 +32,7 @@ class WatchConnector: NSObject, WCSessionDelegate {
         ])
     }
     
-    func sendUploadLocation(with coordinate: CLLocationCoordinate2D){ //update lokasi
+    func sendUploadLocation(with coordinate: CLLocationCoordinate2D){
         session.transferUserInfo([
             "action": "uploadLocation",
             "latitude": coordinate.latitude,
