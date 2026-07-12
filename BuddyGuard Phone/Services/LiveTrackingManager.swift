@@ -9,6 +9,7 @@ import Foundation
 import CoreLocation
 import FirebaseFirestore
 import FirebaseAuth
+import ActivityKit
 
 @Observable
 class LiveTrackingManager {
@@ -16,11 +17,16 @@ class LiveTrackingManager {
     // MARK: - Public State
     var sessionId: String?
     var isActive: Bool = false
-    
+
     // MARK: - Private
     private let db = Firestore.firestore()
     private var lastUploadTime: Date = .distantPast
     private var lastUploadedLocation: CLLocation?
+
+    // MARK: - Live Activity
+    private var liveActivity: Activity<EmergencyActivityAttributes>?
+    private var elapsedTimer: Timer?
+    private var sessionStartTime: Date?
     
     // Throttle: minimum 5 seconds between writes
     private let minimumUploadInterval: TimeInterval = 5.0
@@ -36,12 +42,14 @@ class LiveTrackingManager {
             print("🚨 LiveTrackingManager: No authenticated user, cannot start session.")
             return
         }
-        
+
         let newSessionId = UUID().uuidString
         self.sessionId = newSessionId
         self.isActive = true
         self.lastUploadTime = Date()
         self.lastUploadedLocation = CLLocation(latitude: coordinate.latitude, longitude: coordinate.longitude)
+
+        startLiveActivity(userName: currentUser.displayName ?? "User", sessionId: newSessionId)
         
         let sessionData: [String: Any] = [
             "sessionId": newSessionId,
@@ -160,12 +168,12 @@ class LiveTrackingManager {
     /// Marks the session as inactive in Firestore. Called on map dismiss.
     func stopSession() {
         guard let sessionId = sessionId else { return }
-        
+
         let updateData: [String: Any] = [
             "isActive": false,
             "lastUpdated": FieldValue.serverTimestamp()
         ]
-        
+
         db.collection("tracking_sessions").document(sessionId).updateData(updateData) { error in
             if let error = error {
                 print("⚠️ LiveTrackingManager: Stop session failed — \(error.localizedDescription)")
@@ -173,7 +181,8 @@ class LiveTrackingManager {
                 print("✅ LiveTrackingManager: Session ended.")
             }
         }
-        
+
+        endLiveActivity()
         isActive = false
         self.sessionId = nil
     }
@@ -221,6 +230,82 @@ class LiveTrackingManager {
                 print("⚠️ Worker returned an error: \(body)")
             }
         }.resume()
+    }
+
+    // MARK: - Live Activity
+
+    private func startLiveActivity(userName: String, sessionId: String) {
+        guard ActivityAuthorizationInfo().areActivitiesEnabled else {
+            print("ℹ️ Live Activities not enabled.")
+            return
+        }
+
+        let attributes = EmergencyActivityAttributes(userName: userName, sessionId: sessionId)
+        let initialState = EmergencyActivityAttributes.ContentState(
+            status: "active",
+            elapsedSeconds: 0,
+            contactsNotified: 0
+        )
+
+        do {
+            liveActivity = try Activity.request(
+                attributes: attributes,
+                content: .init(state: initialState, staleDate: nil),
+                pushType: nil
+            )
+            sessionStartTime = Date()
+            startElapsedTimer()
+            print("✅ Live Activity started.")
+        } catch {
+            print("⚠️ Failed to start Live Activity: \(error.localizedDescription)")
+        }
+    }
+
+    func updateLiveActivityContacts(_ count: Int) {
+        guard let activity = liveActivity else { return }
+        let elapsed = Int(Date().timeIntervalSince(sessionStartTime ?? Date()))
+        let state = EmergencyActivityAttributes.ContentState(
+            status: "active",
+            elapsedSeconds: elapsed,
+            contactsNotified: count
+        )
+        Task {
+            await activity.update(.init(state: state, staleDate: nil))
+        }
+    }
+
+    private func startElapsedTimer() {
+        elapsedTimer?.invalidate()
+        elapsedTimer = Timer.scheduledTimer(withTimeInterval: 10, repeats: true) { [weak self] _ in
+            guard let self, let activity = self.liveActivity else { return }
+            let elapsed = Int(Date().timeIntervalSince(self.sessionStartTime ?? Date()))
+            let state = EmergencyActivityAttributes.ContentState(
+                status: "active",
+                elapsedSeconds: elapsed,
+                contactsNotified: 0
+            )
+            Task {
+                await activity.update(.init(state: state, staleDate: nil))
+            }
+        }
+    }
+
+    private func endLiveActivity() {
+        elapsedTimer?.invalidate()
+        elapsedTimer = nil
+        sessionStartTime = nil
+
+        guard let activity = liveActivity else { return }
+        let finalState = EmergencyActivityAttributes.ContentState(
+            status: "ended",
+            elapsedSeconds: 0,
+            contactsNotified: 0
+        )
+        Task {
+            await activity.end(.init(state: finalState, staleDate: nil), dismissalPolicy: .default)
+            print("✅ Live Activity ended.")
+        }
+        liveActivity = nil
     }
 }
 

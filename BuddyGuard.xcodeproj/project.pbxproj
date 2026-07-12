@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		8ED49015300378E90090608C /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E98A035B2FFEBF3400E42604 /* WidgetKit.framework */; };
+		8ED49016300378E90090608C /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E98A035D2FFEBF3400E42604 /* SwiftUI.framework */; };
+		8ED49025300378EA0090608C /* IOSWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 8ED49014300378E90090608C /* IOSWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		CB53E23C2FF7D94000E7DDCC /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = CB53E23B2FF7D94000E7DDCC /* FirebaseAnalytics */; };
 		CB53E23E2FF7D94000E7DDCC /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = CB53E23D2FF7D94000E7DDCC /* FirebaseAuth */; };
 		CB53E2402FF7D94000E7DDCC /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = CB53E23F2FF7D94000E7DDCC /* FirebaseCore */; };
@@ -21,6 +24,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		8ED49023300378EA0090608C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 8E7B295C2FEE1AE600E8B444 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 8ED49013300378E90090608C;
+			remoteInfo = IOSWidgetExtension;
+		};
 		E98A036B2FFEBF3500E42604 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 8E7B295C2FEE1AE600E8B444 /* Project object */;
@@ -31,6 +41,17 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
+		8ED49026300378EA0090608C /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				8ED49025300378EA0090608C /* IOSWidgetExtension.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		E98A03722FFEBF3500E42604 /* Embed Foundation Extensions */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -47,6 +68,7 @@
 /* Begin PBXFileReference section */
 		8E7B29642FEE1AE600E8B444 /* BuddyGuard - Safety Companion.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "BuddyGuard - Safety Companion.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		8E7B297C2FEE1C4A00E8B444 /* BuddyGuard WatchOs Watch App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "BuddyGuard WatchOs Watch App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		8ED49014300378E90090608C /* IOSWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = IOSWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		CB56B6CB2FFB6DAA00F3E260 /* BuddyGuard-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "BuddyGuard-Info.plist"; sourceTree = "<group>"; };
 		CB6BBDE32FF768AD006ED1A1 /* BuddyGuard.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = BuddyGuard.entitlements; sourceTree = "<group>"; };
 		E98A035A2FFEBF3400E42604 /* WatchWidgetBGExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = WatchWidgetBGExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -56,6 +78,13 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		8ED49029300378EA0090608C /* Exceptions for "IOSWidget" folder in "IOSWidgetExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 8ED49013300378E90090608C /* IOSWidgetExtension */;
+		};
 		E98A03712FFEBF3500E42604 /* Exceptions for "WatchWidgetBG" folder in "WatchWidgetBGExtension" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
@@ -96,6 +125,14 @@
 			path = "BuddyGuard Watch";
 			sourceTree = "<group>";
 		};
+		8ED49017300378E90090608C /* IOSWidget */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				8ED49029300378EA0090608C /* Exceptions for "IOSWidget" folder in "IOSWidgetExtension" target */,
+			);
+			path = IOSWidget;
+			sourceTree = "<group>";
+		};
 		E98A035F2FFEBF3400E42604 /* WatchWidgetBG */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
@@ -130,6 +167,15 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		8ED49011300378E90090608C /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8ED49016300378E90090608C /* SwiftUI.framework in Frameworks */,
+				8ED49015300378E90090608C /* WidgetKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		E98A03572FFEBF3400E42604 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -151,6 +197,7 @@
 				8E7B29662FEE1AE600E8B444 /* BuddyGuard Phone */,
 				8E7B297D2FEE1C4A00E8B444 /* BuddyGuard Watch */,
 				E98A035F2FFEBF3400E42604 /* WatchWidgetBG */,
+				8ED49017300378E90090608C /* IOSWidget */,
 				CB53E2432FF7D97300E7DDCC /* Frameworks */,
 				8E7B29652FEE1AE600E8B444 /* Products */,
 			);
@@ -162,6 +209,7 @@
 				8E7B29642FEE1AE600E8B444 /* BuddyGuard - Safety Companion.app */,
 				8E7B297C2FEE1C4A00E8B444 /* BuddyGuard WatchOs Watch App.app */,
 				E98A035A2FFEBF3400E42604 /* WatchWidgetBGExtension.appex */,
+				8ED49014300378E90090608C /* IOSWidgetExtension.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -185,10 +233,12 @@
 				8E7B29602FEE1AE600E8B444 /* Sources */,
 				8E7B29612FEE1AE600E8B444 /* Frameworks */,
 				8E7B29622FEE1AE600E8B444 /* Resources */,
+				8ED49026300378EA0090608C /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				8ED49024300378EA0090608C /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				8E7B29662FEE1AE600E8B444 /* BuddyGuard Phone */,
@@ -232,6 +282,28 @@
 			productReference = 8E7B297C2FEE1C4A00E8B444 /* BuddyGuard WatchOs Watch App.app */;
 			productType = "com.apple.product-type.application";
 		};
+		8ED49013300378E90090608C /* IOSWidgetExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 8ED4902A300378EA0090608C /* Build configuration list for PBXNativeTarget "IOSWidgetExtension" */;
+			buildPhases = (
+				8ED49010300378E90090608C /* Sources */,
+				8ED49011300378E90090608C /* Frameworks */,
+				8ED49012300378E90090608C /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				8ED49017300378E90090608C /* IOSWidget */,
+			);
+			name = IOSWidgetExtension;
+			packageProductDependencies = (
+			);
+			productName = IOSWidgetExtension;
+			productReference = 8ED49014300378E90090608C /* IOSWidgetExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 		E98A03592FFEBF3400E42604 /* WatchWidgetBGExtension */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = E98A036E2FFEBF3500E42604 /* Build configuration list for PBXNativeTarget "WatchWidgetBGExtension" */;
@@ -270,6 +342,9 @@
 					8E7B297B2FEE1C4A00E8B444 = {
 						CreatedOnToolsVersion = 26.5;
 					};
+					8ED49013300378E90090608C = {
+						CreatedOnToolsVersion = 26.6;
+					};
 					E98A03592FFEBF3400E42604 = {
 						CreatedOnToolsVersion = 26.6;
 					};
@@ -296,6 +371,7 @@
 				8E7B29632FEE1AE600E8B444 /* BuddyGuard */,
 				8E7B297B2FEE1C4A00E8B444 /* BuddyGuard WatchOs Watch App */,
 				E98A03592FFEBF3400E42604 /* WatchWidgetBGExtension */,
+				8ED49013300378E90090608C /* IOSWidgetExtension */,
 			);
 		};
 /* End PBXProject section */
@@ -309,6 +385,13 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		8E7B297A2FEE1C4A00E8B444 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		8ED49012300378E90090608C /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -339,6 +422,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		8ED49010300378E90090608C /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		E98A03562FFEBF3400E42604 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -349,6 +439,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		8ED49024300378EA0090608C /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 8ED49013300378E90090608C /* IOSWidgetExtension */;
+			targetProxy = 8ED49023300378EA0090608C /* PBXContainerItemProxy */;
+		};
 		E98A036C2FFEBF3500E42604 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = E98A03592FFEBF3400E42604 /* WatchWidgetBGExtension */;
@@ -589,7 +684,7 @@
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 4XGZ9C5T38;
+				DEVELOPMENT_TEAM = 3GQRS52F9C;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "BuddyGuard-WatchOs-Watch-App-Info.plist";
@@ -625,7 +720,7 @@
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 4XGZ9C5T38;
+				DEVELOPMENT_TEAM = 3GQRS52F9C;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "BuddyGuard-WatchOs-Watch-App-Info.plist";
@@ -654,6 +749,73 @@
 			};
 			name = Release;
 		};
+		8ED49027300378EA0090608C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 3GQRS52F9C;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = IOSWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = IOSWidget;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 26.5;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = joyce.com.BuddyGuard.IOSWidget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		8ED49028300378EA0090608C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 3GQRS52F9C;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = IOSWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = IOSWidget;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 26.5;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = joyce.com.BuddyGuard.IOSWidget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 		E98A036F2FFEBF3500E42604 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -661,7 +823,7 @@
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 4XGZ9C5T38;
+				DEVELOPMENT_TEAM = 3GQRS52F9C;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = WatchWidgetBG/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = WatchWidgetBG;
@@ -694,7 +856,7 @@
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 4XGZ9C5T38;
+				DEVELOPMENT_TEAM = 3GQRS52F9C;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = WatchWidgetBG/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = WatchWidgetBG;
@@ -747,6 +909,15 @@
 			buildConfigurations = (
 				8E7B29842FEE1C4B00E8B444 /* Debug */,
 				8E7B29852FEE1C4B00E8B444 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		8ED4902A300378EA0090608C /* Build configuration list for PBXNativeTarget "IOSWidgetExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				8ED49027300378EA0090608C /* Debug */,
+				8ED49028300378EA0090608C /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

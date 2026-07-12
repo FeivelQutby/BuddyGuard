@@ -1,8 +1,8 @@
-import WidgetKit
+import AppIntents
 import SwiftUI
+import WidgetKit
 
-@available(iOS 18.0, *)
-struct EmergencyControlWidget: ControlWidget {
+struct EmergencyControl: ControlWidget {
     var body: some ControlWidgetConfiguration {
         StaticControlConfiguration(kind: "com.buddyguard.emergency-control") {
             ControlWidgetButton(action: TriggerEmergencyIntent()) {
