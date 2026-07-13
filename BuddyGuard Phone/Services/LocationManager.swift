@@ -10,12 +10,25 @@ import CoreLocation
 import MapKit
 import SwiftUI // Replaced _MapKit_SwiftUI with standard SwiftUI
 
+enum CameraMode {
+    /// 3-D heading-tracked view that rotates with the device.
+    case gyro
+    /// Flat top-down view centred on the user (no heading/pitch).
+    case overview
+}
+
 @Observable
 class LocationManager: NSObject, CLLocationManagerDelegate {
     var coordinate: CLLocationCoordinate2D?
     var camera: MapCameraPosition = .automatic
     var showPin = true
     var heading: CLLocationDirection = 0
+
+    /// Controls whether the map follows the device gyro (heading + pitch)
+    /// or shows a plain top-down overview.
+    var cameraMode: CameraMode = .gyro {
+        didSet { updateCamera() }
+    }
     
     // Make the manager private so we don't accidentally mess with it outside this class
     private var manager: CLLocationManager = CLLocationManager()
@@ -65,24 +78,40 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
         
         coordinate = latestLocation.coordinate
         showPin = true
+        // In overview mode the camera is pinned by the user — don't auto-follow.
+        guard cameraMode == .gyro else { return }
         updateCamera()
     }
     
     func locationManager(_ manager: CLLocationManager, didUpdateHeading newHeading: CLHeading) {
         heading = newHeading.trueHeading >= 0 ? newHeading.trueHeading : newHeading.magneticHeading
+        // Heading changes should only rotate the map in gyro mode.
+        guard cameraMode == .gyro else { return }
         updateCamera()
     }
     
-    private func updateCamera(){
+    func updateCamera() {
         guard let coord = coordinate else { return }
-        camera = .camera(
-            MapCamera(
-                centerCoordinate: coord,
-                distance: 300,
-                heading: heading,
-                pitch: 60
+        switch cameraMode {
+        case .gyro:
+            camera = .camera(
+                MapCamera(
+                    centerCoordinate: coord,
+                    distance: 300,
+                    heading: heading,
+                    pitch: 60
+                )
             )
-        )
+        case .overview:
+            camera = .camera(
+                MapCamera(
+                    centerCoordinate: coord,
+                    distance: 800,
+                    heading: 0,
+                    pitch: 0
+                )
+            )
+        }
     }
 }
 

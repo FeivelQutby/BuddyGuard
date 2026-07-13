@@ -582,7 +582,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = YES;
-				DEVELOPMENT_TEAM = 3GQRS52F9C;
+				DEVELOPMENT_TEAM = HKS2XN3KMY;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
@@ -590,6 +590,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "BuddyGuard-Info.plist";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "BuddyGuard needs your location to send for help during an emergency.";
+				INFOPLIST_KEY_NSSupportsLiveActivities = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
@@ -606,7 +607,7 @@
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 26.3;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = joyce.com.BuddyGuard;
+				PRODUCT_BUNDLE_IDENTIFIER = com.george.BuddyGuard;
 				PRODUCT_NAME = "BuddyGuard - Safety Companion";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				REGISTER_APP_GROUPS = YES;
@@ -634,7 +635,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = YES;
-				DEVELOPMENT_TEAM = 3GQRS52F9C;
+				DEVELOPMENT_TEAM = HKS2XN3KMY;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
@@ -642,6 +643,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "BuddyGuard-Info.plist";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "BuddyGuard needs your location to send for help during an emergency.";
+				INFOPLIST_KEY_NSSupportsLiveActivities = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
@@ -658,7 +660,7 @@
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 26.3;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = joyce.com.BuddyGuard;
+				PRODUCT_BUNDLE_IDENTIFIER = com.george.BuddyGuard;
 				PRODUCT_NAME = "BuddyGuard - Safety Companion";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				REGISTER_APP_GROUPS = YES;
@@ -684,7 +686,7 @@
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 3GQRS52F9C;
+				DEVELOPMENT_TEAM = HKS2XN3KMY;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "BuddyGuard-WatchOs-Watch-App-Info.plist";
@@ -697,7 +699,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.feivelqutby.BuddyGuard.watchApp;
+				PRODUCT_BUNDLE_IDENTIFIER = com.george.BuddyGuard.watchApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
@@ -720,7 +722,7 @@
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 3GQRS52F9C;
+				DEVELOPMENT_TEAM = HKS2XN3KMY;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "BuddyGuard-WatchOs-Watch-App-Info.plist";
@@ -733,7 +735,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.feivelqutby.BuddyGuard.watchApp;
+				PRODUCT_BUNDLE_IDENTIFIER = com.george.BuddyGuard.watchApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
@@ -757,7 +759,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 3GQRS52F9C;
+				DEVELOPMENT_TEAM = HKS2XN3KMY;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = IOSWidget/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = IOSWidget;
@@ -769,7 +771,7 @@
 					"@executable_path/../../Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = joyce.com.BuddyGuard.IOSWidget;
+				PRODUCT_BUNDLE_IDENTIFIER = com.george.BuddyGuard.iOSWidget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
@@ -790,7 +792,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 3GQRS52F9C;
+				DEVELOPMENT_TEAM = HKS2XN3KMY;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = IOSWidget/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = IOSWidget;
@@ -802,7 +804,7 @@
 					"@executable_path/../../Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = joyce.com.BuddyGuard.IOSWidget;
+				PRODUCT_BUNDLE_IDENTIFIER = com.george.BuddyGuard.iOSWidget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
@@ -823,7 +825,7 @@
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 3GQRS52F9C;
+				DEVELOPMENT_TEAM = HKS2XN3KMY;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = WatchWidgetBG/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = WatchWidgetBG;
@@ -835,7 +837,7 @@
 					"@executable_path/../../../../Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = joyce.com.BuddyGuard.watchApp.WatchWidgetBG;
+				PRODUCT_BUNDLE_IDENTIFIER = com.george.BuddyGuard.watchApp.WatchWidgetBG;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
@@ -856,7 +858,7 @@
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 3GQRS52F9C;
+				DEVELOPMENT_TEAM = HKS2XN3KMY;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = WatchWidgetBG/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = WatchWidgetBG;
@@ -868,7 +870,7 @@
 					"@executable_path/../../../../Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = joyce.com.BuddyGuard.watchApp.WatchWidgetBG;
+				PRODUCT_BUNDLE_IDENTIFIER = com.george.BuddyGuard.watchApp.WatchWidgetBG;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;

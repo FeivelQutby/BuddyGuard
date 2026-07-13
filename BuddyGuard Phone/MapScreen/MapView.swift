@@ -60,6 +60,10 @@ struct MapView: View {
     @State private var showSOSToast = false
     @State private var showImSafeToast = false
     @State private var showContactOnWayToast = false
+
+    // MARK: - Camera state
+    /// Becomes false whenever the user drags/zooms the map manually.
+    @State private var isMapCentered: Bool = true
     
     init(request: ActivityRequest? = nil, role: MapRole = .emergencyContact, liveTrackingManager: LiveTrackingManager? = nil) {
         self.request = request
@@ -145,6 +149,20 @@ struct MapView: View {
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) {
                         showNotifiedToast = true
                     }
+                }
+            }
+            .onMapCameraChange(frequency: .onEnd) { _ in
+                // Detect user-initiated camera movement (drag / pinch-zoom).
+                // We compare the camera center to the user's current location.
+                // A small tolerance avoids false positives from floating-point drift.
+                if let userCoord = locationManager.coordinate,
+                   let mapCenter = locationManager.camera.camera?.centerCoordinate {
+                    let userCL = CLLocation(latitude: userCoord.latitude, longitude: userCoord.longitude)
+                    let mapCL  = CLLocation(latitude: mapCenter.latitude, longitude: mapCenter.longitude)
+                    // If map center is more than 30 m away from the user → not centered
+                    isMapCentered = mapCL.distance(from: userCL) < 30
+                } else {
+                    isMapCentered = false
                 }
             }
             .task {
@@ -624,20 +642,35 @@ struct MapView: View {
     @ViewBuilder
     func BottomFloatingToolBar() -> some View {
         Button {
-            withAnimation {
-                let target = role == .emergencyContact
-                    ? (trackedUserCoordinate ?? locationManager.coordinate)
-                    : locationManager.coordinate
-                if let coord = target {
-                    locationManager.camera = .region(
-                        MKCoordinateRegion(center: coord, latitudinalMeters: 800, longitudinalMeters: 800)
-                    )
+            withAnimation(.easeInOut(duration: 0.4)) {
+                if role == .emergencyContact {
+                    // Emergency-contact role: always re-center on the tracked friend
+                    let target = trackedUserCoordinate ?? locationManager.coordinate
+                    if let coord = target {
+                        locationManager.camera = .region(
+                            MKCoordinateRegion(center: coord, latitudinalMeters: 800, longitudinalMeters: 800)
+                        )
+                        isMapCentered = true
+                    }
+                } else {
+                    // Active-user role — 2-state toggle
+                    if !isMapCentered {
+                        // State 1 → re-center on user (keep current mode)
+                        locationManager.updateCamera()
+                        isMapCentered = true
+                    } else {
+                        // State 2 → already centered: toggle gyro ↔ overview
+                        locationManager.cameraMode = locationManager.cameraMode == .gyro ? .overview : .gyro
+                        // cameraMode.didSet calls updateCamera() automatically
+                        isMapCentered = true
+                    }
                 }
             }
         } label: {
-            Image(systemName: role == .emergencyContact ? "figure.wave" : "location.fill")
+            Image(systemName: buttonIcon)
                 .frame(width: 20, height: 20)
                 .tint(.white)
+                .contentTransition(.symbolEffect(.replace))
         }
         .font(.title3)
         .buttonStyle(.borderedProminent)
@@ -646,6 +679,13 @@ struct MapView: View {
         .offset(y: -sheetHeight)
         .animation(.interpolatingSpring(duration: animationDuration, bounce: 0, initialVelocity: 0), value: sheetHeight)
         .tint(.normalActiveNd)
+    }
+
+    /// The SF Symbol to show on the floating button.
+    private var buttonIcon: String {
+        if role == .emergencyContact { return "figure.wave" }
+        if !isMapCentered { return "location" }                      // off-center: tap to re-center
+        return locationManager.cameraMode == .gyro ? "location.north.line.fill" : "location.fill" // gyro active : overview active
     }
 }
 
