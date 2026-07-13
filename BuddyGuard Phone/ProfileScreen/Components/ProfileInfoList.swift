@@ -35,6 +35,8 @@ struct ProfileInfoList: View {
                         .font(.body.weight(.semibold))
                         .foregroundStyle(.red)
                     Spacer()
+                    Image(systemName: "chevron.right")
+                        .foregroundStyle(.red)
                 }
                 .padding(.vertical, 10)
             }
