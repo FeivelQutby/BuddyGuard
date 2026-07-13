@@ -10,6 +10,7 @@ import Foundation
 import Observation
 import FirebaseFirestore
 import FirebaseAuth
+import ActivityKit
 
 @Observable
 final class ActivityViewModel {
@@ -19,6 +20,7 @@ final class ActivityViewModel {
     private let db = Firestore.firestore()
     private var listener: ListenerRegistration?
     private var contactUIDs: [String] = []
+    private var contactActivities: [String: Activity<EmergencyActivityAttributes>] = [:]
 
     init(requests: [ActivityRequest] = []) {
         self.requests = requests
@@ -143,14 +145,76 @@ final class ActivityViewModel {
                 
                 DispatchQueue.main.async {
                     self.requests = activeSessions
+                    self.syncLiveActivities(activeSessions)
                 }
             }
     }
-    
+
     /// Re-fetch contacts and re-start listening. Useful after accepting a new invitation.
     func refreshContacts() {
         Task {
             await loadContactsAndStartListening()
+        }
+    }
+
+    // MARK: - Live Activities for Emergency Contacts
+
+    private func syncLiveActivities(_ sessions: [ActivityRequest]) {
+        guard ActivityAuthorizationInfo().areActivitiesEnabled else { return }
+
+        let activeSessionIds = Set(sessions.map { $0.sessionId })
+
+        for session in sessions {
+            if contactActivities[session.sessionId] == nil {
+                startContactLiveActivity(for: session)
+            } else {
+                updateContactLiveActivity(for: session)
+            }
+        }
+
+        for (sessionId, activity) in contactActivities where !activeSessionIds.contains(sessionId) {
+            let finalState = EmergencyActivityAttributes.ContentState(
+                status: "Arrived",
+                contactsNotified: 0
+            )
+            Task {
+                await activity.end(.init(state: finalState, staleDate: nil), dismissalPolicy: .immediate)
+            }
+            contactActivities.removeValue(forKey: sessionId)
+        }
+    }
+
+    private func startContactLiveActivity(for request: ActivityRequest) {
+        let attributes = EmergencyActivityAttributes(
+            userName: request.name,
+            sessionId: request.sessionId,
+            startTime: Date(),
+            role: "emergencyContact"
+        )
+        let state = EmergencyActivityAttributes.ContentState(
+            status: request.state.rawValue,
+            contactsNotified: 0
+        )
+        do {
+            let activity = try Activity.request(
+                attributes: attributes,
+                content: .init(state: state, staleDate: nil),
+                pushType: nil
+            )
+            contactActivities[request.sessionId] = activity
+        } catch {
+            print("⚠️ Failed to start contact Live Activity: \(error.localizedDescription)")
+        }
+    }
+
+    private func updateContactLiveActivity(for request: ActivityRequest) {
+        guard let activity = contactActivities[request.sessionId] else { return }
+        let state = EmergencyActivityAttributes.ContentState(
+            status: request.state.rawValue,
+            contactsNotified: 0
+        )
+        Task {
+            await activity.update(.init(state: state, staleDate: nil))
         }
     }
 }

@@ -10,4 +10,5 @@ struct EmergencyActivityAttributes: ActivityAttributes, Sendable {
     var userName: String
     var sessionId: String
     var startTime: Date
+    var role: String
 }

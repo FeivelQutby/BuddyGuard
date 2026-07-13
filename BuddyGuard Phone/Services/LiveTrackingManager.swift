@@ -233,7 +233,7 @@ class LiveTrackingManager {
 
     // MARK: - Live Activity
 
-    private func startLiveActivity(userName: String, sessionId: String) {
+    func startLiveActivity(userName: String, sessionId: String, role: String = "activeUser") {
         guard ActivityAuthorizationInfo().areActivitiesEnabled else {
             print("ℹ️ Live Activities not enabled.")
             return
@@ -242,7 +242,8 @@ class LiveTrackingManager {
         let attributes = EmergencyActivityAttributes(
             userName: userName,
             sessionId: sessionId,
-            startTime: Date()
+            startTime: Date(),
+            role: role
         )
         let initialState = EmergencyActivityAttributes.ContentState(
             status: "active",
