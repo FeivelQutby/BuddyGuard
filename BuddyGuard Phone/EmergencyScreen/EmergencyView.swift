@@ -212,16 +212,16 @@ struct EmergencyView: View {
                 
                 // Fire emergency start notification to all alertable contacts
                 let trackingManager = liveTrackingManager
-                Task {
-                    let contactManager = await EmergencyContactManager()
+                Task { @MainActor in
+                    let contactManager = EmergencyContactManager()
                     let tokens = await contactManager.fetchFCMTokensForAlertableContacts()
                     guard !tokens.isEmpty else {
                         print("ℹ️ No alertable contacts with FCM tokens found.")
                         return
                     }
                     let senderName = Auth.auth().currentUser?.displayName ?? "Your Friend"
-                    let alertId = await trackingManager.sessionId ?? UUID().uuidString
-                    await trackingManager.triggerEmergencyAlert(
+                    let alertId = trackingManager.sessionId ?? UUID().uuidString
+                    trackingManager.triggerEmergencyAlert(
                         alertId: alertId,
                         senderName: senderName,
                         friendTokens: tokens,
@@ -245,13 +245,13 @@ struct EmergencyView: View {
         }
 
         let trackingManager = liveTrackingManager
-        Task {
-            let contactManager = await EmergencyContactManager()
+        Task { @MainActor in
+            let contactManager = EmergencyContactManager()
             let tokens = await contactManager.fetchFCMTokensForAlertableContacts()
             guard !tokens.isEmpty else { return }
             let senderName = Auth.auth().currentUser?.displayName ?? "Your Friend"
-            let alertId = await trackingManager.sessionId ?? UUID().uuidString
-            await trackingManager.triggerEmergencyAlert(
+            let alertId = trackingManager.sessionId ?? UUID().uuidString
+            trackingManager.triggerEmergencyAlert(
                 alertId: alertId,
                 senderName: senderName,
                 friendTokens: tokens,

@@ -25,8 +25,6 @@ class LiveTrackingManager {
 
     // MARK: - Live Activity
     private var liveActivity: Activity<EmergencyActivityAttributes>?
-    private var elapsedTimer: Timer?
-    private var sessionStartTime: Date?
     
     // Throttle: minimum 5 seconds between writes
     private let minimumUploadInterval: TimeInterval = 5.0
@@ -159,6 +157,7 @@ class LiveTrackingManager {
         }
         
         if status == .Arrived {
+            endLiveActivity()
             isActive = false
         }
     }
@@ -240,10 +239,13 @@ class LiveTrackingManager {
             return
         }
 
-        let attributes = EmergencyActivityAttributes(userName: userName, sessionId: sessionId)
+        let attributes = EmergencyActivityAttributes(
+            userName: userName,
+            sessionId: sessionId,
+            startTime: Date()
+        )
         let initialState = EmergencyActivityAttributes.ContentState(
             status: "active",
-            elapsedSeconds: 0,
             contactsNotified: 0
         )
 
@@ -253,8 +255,6 @@ class LiveTrackingManager {
                 content: .init(state: initialState, staleDate: nil),
                 pushType: nil
             )
-            sessionStartTime = Date()
-            startElapsedTimer()
             print("✅ Live Activity started.")
         } catch {
             print("⚠️ Failed to start Live Activity: \(error.localizedDescription)")
@@ -263,10 +263,8 @@ class LiveTrackingManager {
 
     func updateLiveActivityContacts(_ count: Int) {
         guard let activity = liveActivity else { return }
-        let elapsed = Int(Date().timeIntervalSince(sessionStartTime ?? Date()))
         let state = EmergencyActivityAttributes.ContentState(
             status: "active",
-            elapsedSeconds: elapsed,
             contactsNotified: count
         )
         Task {
@@ -274,35 +272,14 @@ class LiveTrackingManager {
         }
     }
 
-    private func startElapsedTimer() {
-        elapsedTimer?.invalidate()
-        elapsedTimer = Timer.scheduledTimer(withTimeInterval: 10, repeats: true) { [weak self] _ in
-            guard let self, let activity = self.liveActivity else { return }
-            let elapsed = Int(Date().timeIntervalSince(self.sessionStartTime ?? Date()))
-            let state = EmergencyActivityAttributes.ContentState(
-                status: "active",
-                elapsedSeconds: elapsed,
-                contactsNotified: 0
-            )
-            Task {
-                await activity.update(.init(state: state, staleDate: nil))
-            }
-        }
-    }
-
     private func endLiveActivity() {
-        elapsedTimer?.invalidate()
-        elapsedTimer = nil
-        sessionStartTime = nil
-
         guard let activity = liveActivity else { return }
         let finalState = EmergencyActivityAttributes.ContentState(
             status: "ended",
-            elapsedSeconds: 0,
             contactsNotified: 0
         )
         Task {
-            await activity.end(.init(state: finalState, staleDate: nil), dismissalPolicy: .default)
+            await activity.end(.init(state: finalState, staleDate: nil), dismissalPolicy: .immediate)
             print("✅ Live Activity ended.")
         }
         liveActivity = nil
