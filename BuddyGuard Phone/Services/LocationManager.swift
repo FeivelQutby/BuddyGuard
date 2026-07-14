@@ -73,9 +73,6 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         guard let latestLocation = locations.last else { return }
-        
-        print("Lokasi masuk: \(latestLocation.coordinate.latitude), \(latestLocation.coordinate.longitude)")
-        
         coordinate = latestLocation.coordinate
         showPin = true
         // In overview mode the camera is pinned by the user — don't auto-follow.

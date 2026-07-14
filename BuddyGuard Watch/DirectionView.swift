@@ -11,13 +11,17 @@ import WatchConnectivity
 
 struct DirectionView: View {
     @State private var locationManager = LocationManager()
-    @State private var routeManager = RouteManager()
+    @Binding var routeManager: RouteManager
+    var emergencyService: WatchEmergencyService
     @State private var safeDestinationName: String = "Finding Safe Place ..."
     @State private var safeDestinationCoordinate: CLLocationCoordinate2D?
     @State private var lastRouteFetchLocation: CLLocation? = nil
     @State private var lastRouteFetchTime: Date = .distantPast
-    @State private var showArriveConfirmation: Bool = false
+    @Binding var showArriveConfirmation: Bool
     @Binding var showDirection: Bool
+    /// Whether the map should auto-follow the user's location.
+    /// Set to false when the user manually pans/zooms; restored by the re-centre button.
+    @State private var isFollowing: Bool = true
     
     var body: some View {
         Map(position: $locationManager.camera){
@@ -48,10 +52,28 @@ struct DirectionView: View {
         .onAppear {
             locationManager.requestLocationPermission()
         }
+        .onMapCameraChange(frequency: .onEnd) { _ in
+            // Detect user-initiated pan/zoom: compare map centre to user location.
+            if let userCoord = locationManager.coordinate,
+               let mapCenter = locationManager.camera.camera?.centerCoordinate {
+                let userCL  = CLLocation(latitude: userCoord.latitude,  longitude: userCoord.longitude)
+                let mapCL   = CLLocation(latitude: mapCenter.latitude,   longitude: mapCenter.longitude)
+                // More than 40 m off-centre → user manually panned → stop following.
+                let shouldFollow = mapCL.distance(from: userCL) < 40
+                if !shouldFollow && isFollowing {
+                    isFollowing = false
+                    // Switch to overview so LocationManager stops overriding the camera.
+                    locationManager.cameraMode = .overview
+                }
+            } else {
+                isFollowing = false
+                locationManager.cameraMode = .overview
+            }
+        }
         .task {
-            // Active user: find safe place and draw route
+            // Find the nearest safe place and draw the route.
+            // NOTE: sendStartSession is NOT called here — ContentView already started the session.
             if let coord = locationManager.coordinate {
-                WatchConnector.shared.sendStartSession(with: coord)
                 await fetchRoute(from: coord)
             }
         }
@@ -59,19 +81,15 @@ struct DirectionView: View {
             guard let newCoord else { return }
             handleLocationChange(newCoord)
         }
-        .navigationBarBackButtonHidden()
-        .toolbar{
-            
-            ToolbarItem(placement: .topBarTrailing){
-                Button{
-                    WatchConnector.shared.sendUpdateStatus(.Urgent)
-                }label:{
-                    Text("SOS").font(.system(size: 10, weight: .semibold));
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Button {
+                    emergencyService.updateStatus(.Urgent)
+                } label: {
+                    Text("SOS").font(.system(size: 10, weight: .semibold))
                 }
                 .tint(Color.red)
-                
             }
-            
         }
         .overlay(alignment: .top){
             VStack{
@@ -80,10 +98,7 @@ struct DirectionView: View {
         }
         .ignoresSafeArea()
         .overlay(alignment: .bottomLeading){
-            let _ = print("currentStep is nil?: \(routeManager.currentStep == nil), routeFriendToDestination is nil?: \(routeManager.routeFriendToDestination == nil), currentStepIndex: \(routeManager.currentStepIndex)")
-                
             if let step = routeManager.currentStep {
-                let _ = print("Instruksi: \(step.instructions), Distance: \(step.distance)")
                 HStack(spacing: 5){
                     Image(systemName: iconName(for: step.instructions)).font(.system(size: 25, weight: .bold))
                     VStack(alignment: .leading){
@@ -101,9 +116,6 @@ struct DirectionView: View {
         .overlay(alignment: .bottomTrailing) {
             BottomFloatingToolBar().padding(.trailing, 15)
         }
-        .navigationDestination(isPresented: $showArriveConfirmation){
-            ArriveConfirmationView(showDirection: $showDirection, showArriveConfirmation: $showArriveConfirmation).navigationBarBackButtonHidden()
-        }
     }
     
     private func fetchRoute(from myCoordinate: CLLocationCoordinate2D) async {
@@ -114,8 +126,7 @@ struct DirectionView: View {
                 safeDestinationCoordinate = safePlace.location.coordinate
                 routeManager.safePlaceName = placeName
                 routeManager.safePlaceAddress = "Nearby Secure Zone"
-//               liveTrackingManager?.updateDestination(name: placeName, coordinate: safePlace.location.coordinate)
-                WatchConnector.shared.sendUpdateDestination(name: placeName, coordinate: safePlace.location.coordinate)
+                emergencyService.updateDestination(name: placeName, coordinate: safePlace.location.coordinate)
                 print("✅ Found safe place: \(placeName) synced to RouteManager + Firestore")
             } else {
                 let warningMessage = "No safe places nearby. Stay alert."
@@ -167,9 +178,8 @@ struct DirectionView: View {
     }
     
     private func handleLocationChange(_ newCoord: CLLocationCoordinate2D) {
-//        liveTrackingManager?.uploadLocation(newCoord)
         routeManager.updateCurrentStep(location: newCoord)
-        WatchConnector.shared.sendUploadLocation(with: newCoord)
+        emergencyService.uploadLocation(newCoord)
         let newLocation = CLLocation(latitude: newCoord.latitude, longitude: newCoord.longitude)
         let timePassed = Date().timeIntervalSince(lastRouteFetchTime)
         guard timePassed >= 10.0 else { return }
@@ -233,23 +243,16 @@ struct DirectionView: View {
             
             Button {
                 withAnimation {
-                    let target = locationManager.coordinate
-                    let locationHeading = locationManager.heading
-                    if let coord = target {
-                        locationManager.camera = .camera(
-                            MapCamera(
-                                centerCoordinate: coord,
-                                distance: 300,
-                                heading: locationHeading,
-                                pitch: 60
-                            )
-                        )
-                    }
+                    isFollowing = true
+                    // Restore gyro follow mode so LocationManager resumes auto-centering.
+                    locationManager.cameraMode = .gyro
+                    locationManager.updateCamera()
                 }
             } label: {
-                Image(systemName: "location.fill")
+                Image(systemName: isFollowing ? "location.north.line.fill" : "location")
                     .frame(width: 15, height: 15)
                     .tint(.white)
+                    .contentTransition(.symbolEffect(.replace))
             }.frame(width: 35, height: 35)
         }
         .buttonStyle(.borderedProminent)
@@ -262,7 +265,14 @@ struct DirectionView: View {
 
 #Preview {
     @State var showDirection: Bool = true
-    DirectionView(showDirection: $showDirection)
+    @State var showArriveConfirmation: Bool = false
+    @State var routeManager: RouteManager = RouteManager()
+    DirectionView(
+        routeManager:          $routeManager,
+        emergencyService:      WatchEmergencyService(),
+        showArriveConfirmation: $showArriveConfirmation,
+        showDirection:         $showDirection
+    )
 }
 
 extension CLLocationCoordinate2D: @retroactive Equatable {

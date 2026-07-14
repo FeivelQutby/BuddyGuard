@@ -9,6 +9,11 @@ import SwiftUI
 
 @main
 struct BuddyGuardWatch: App {
+    init() {
+        // Activate WCSession immediately at launch so no incoming messages are missed.
+        _ = WatchConnector.shared
+    }
+
     var body: some Scene {
         WindowGroup {
             ContentView()

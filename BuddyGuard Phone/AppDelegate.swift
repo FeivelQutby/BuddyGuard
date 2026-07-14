@@ -19,6 +19,11 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         
         FirebaseApp.configure()
         
+        // MARK: - WatchConnectivity Bridge
+        // Touching the singleton here activates WCSession immediately at launch,
+        // so no Watch messages are dropped before the first view appears.
+        _ = PhoneConnector.shared
+        
         // MARK: - FCM Delegate
         // Required so FCM can receive the APNs token and exchange it for an FCM token.
         Messaging.messaging().delegate = self

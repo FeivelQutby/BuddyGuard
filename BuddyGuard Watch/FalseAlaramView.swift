@@ -12,69 +12,74 @@ struct FalseAlaramView: View {
     @State private var isSOSPresented: Bool = false
     @State private var isFalseAlarm: Bool = false
     @Binding var showDirection: Bool
-    let routeManager = RouteManager()
+    /// Shared with ContentView and DirectionView so the ETA is always live.
+    @Binding var routeManager: RouteManager
+    var emergencyService: WatchEmergencyService
+
     var body: some View {
-        ZStack{
-            VStack(){
+        ZStack {
+            VStack {
                 Text("Are you safe?").fontWeight(.semibold).padding(.bottom, 10)
-    
-                Button{
+
+                Button {
                     isYesPresented.toggle()
-                }label:{
+                } label: {
                     Text("Yes")
                 }
-                
-                Button{
+
+                Button {
                     isSOSPresented.toggle()
-                    WatchConnector.shared.sendUpdateStatus(.Urgent)
-                }label: {
+                    emergencyService.updateStatus(.Urgent)
+                } label: {
                     Text("SOS")
-                }.tint(Color.red)
+                }
+                .tint(Color.red)
             }
-            
         }
-        .navigationDestination(isPresented: $isYesPresented){
+        .navigationDestination(isPresented: $isYesPresented) {
             slide2()
-                .overlay(alignment: .topTrailing){
+                .overlay(alignment: .topTrailing) {
                     overlayETA
-                }.ignoresSafeArea()
+                }
+                .ignoresSafeArea()
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(backgroundGradient)
-        .overlay(alignment: .topTrailing){
+        .overlay(alignment: .topTrailing) {
             overlayETA.ignoresSafeArea()
         }
     }
-        
-    
-    var overlayETA: some View{
-        Text("ETA \(routeManager.eta ?? "...")").foregroundColor(Color.blue).padding(.top, 35).padding(.trailing, 15)
+
+    var overlayETA: some View {
+        Text("ETA \(routeManager.eta ?? "...")")
+            .foregroundColor(Color.blue)
+            .padding(.top, 35)
+            .padding(.trailing, 15)
     }
-    
-    var backgroundGradient: some View{
+
+    var backgroundGradient: some View {
         LinearGradient(
-            stops:[
+            stops: [
                 .init(color: .clear, location: 0.75),
                 .init(color: .black.opacity(0.3), location: 0.85),
                 .init(color: .black.opacity(0.9), location: 1)
             ], startPoint: .bottom, endPoint: .top
         ).ignoresSafeArea().background(Color.accent)
     }
-    
+
     @ViewBuilder
-    func slide2() -> some View{
-        ZStack{
-            VStack{
+    func slide2() -> some View {
+        ZStack {
+            VStack {
                 Text("Are you sure?").fontWeight(.semibold).padding(.bottom, 10)
-                
-                Button{
+
+                Button {
                     isFalseAlarm.toggle()
                     showDirection.toggle()
-                    WatchConnector.shared.sendUpdateStatus(.Arrived)
-                }label:{
+                    emergencyService.updateStatus(.Arrived)
+                } label: {
                     Text("Yes")
                 }
-
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -84,5 +89,10 @@ struct FalseAlaramView: View {
 
 #Preview {
     @State var showDirection: Bool = true
-    FalseAlaramView(showDirection: $showDirection)
+    @State var routeManager: RouteManager = RouteManager()
+    FalseAlaramView(
+        showDirection:    $showDirection,
+        routeManager:     $routeManager,
+        emergencyService: WatchEmergencyService()
+    )
 }

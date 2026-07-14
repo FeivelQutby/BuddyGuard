@@ -34,10 +34,14 @@ class AuthManager {
         Auth.auth().addStateDidChangeListener { auth, user in
             self.currentUser = user
             self.isAuthenticated = (user != nil)
-            
-            
+
             if let activeUser = user {
                 self.saveUserToDatabase(user: activeUser)
+                // Push user context (UID, name, FCM alert tokens) to the paired Watch
+                PhoneConnector.shared.sendUserContext()
+            } else {
+                // User logged out — tell the Watch to clear its cached context
+                PhoneConnector.shared.notifyWatchLogout()
             }
         }
     }
@@ -102,10 +106,26 @@ class AuthManager {
     }
     
     func signOut() {
-        do {
-            try Auth.auth().signOut()
-        } catch {
-            print("Error signing out: \(error.localizedDescription)")
+        // MARK: - Clear FCM token so logged-out users stop receiving notifications
+        if let uid = Auth.auth().currentUser?.uid {
+            let db = Firestore.firestore()
+            // Delete the FCM token field — fetchFCMTokensForAlertableContacts will then
+            // get nothing for this user, so no notifications are sent after logout.
+            db.collection("users").document(uid).updateData(["fcmToken": FieldValue.delete()]) { _ in
+                do {
+                    try Auth.auth().signOut()
+                } catch {
+                    print("Error signing out: \(error.localizedDescription)")
+                }
+            }
+        } else {
+            do {
+                try Auth.auth().signOut()
+            } catch {
+                print("Error signing out: \(error.localizedDescription)")
+            }
         }
+        // Notify the Watch to clear its cached user context
+        PhoneConnector.shared.notifyWatchLogout()
     }
 }

@@ -13,7 +13,7 @@ struct OpenSOSIntent: AppIntent {
     static var openAppWhenRun: Bool = true
     
     func perform() async throws -> some IntentResult & OpensIntent{
-        let url = URL(string: "buddguard://sos")!
+        let url = URL(string: "buddyguard://sos")!
         return .result(opensIntent: OpenURLIntent(url))
     }
 }

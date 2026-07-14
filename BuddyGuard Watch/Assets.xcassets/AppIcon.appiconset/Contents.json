@@ -1,7 +1,11 @@
 {
   "images" : [
     {
+<<<<<<< Updated upstream
       "filename" : "APP ICON.png",
+=======
+      "filename" : "BuddyGuard App Icon.png",
+>>>>>>> Stashed changes
       "idiom" : "universal",
       "platform" : "watchos",
       "size" : "1024x1024"

@@ -19,8 +19,6 @@
 		E98A035C2FFEBF3400E42604 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E98A035B2FFEBF3400E42604 /* WidgetKit.framework */; };
 		E98A035E2FFEBF3400E42604 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E98A035D2FFEBF3400E42604 /* SwiftUI.framework */; };
 		E98A036D2FFEBF3500E42604 /* WatchWidgetBGExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = E98A035A2FFEBF3400E42604 /* WatchWidgetBGExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
-		E9ECC3B72FFD1F2400CA3470 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = E9ECC3B62FFD1F2400CA3470 /* FirebaseFirestore */; };
-		E9ECC3B92FFD1F4300CA3470 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = E9ECC3B82FFD1F4300CA3470 /* FirebaseAuth */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -102,7 +100,6 @@
 		E9ECC3B32FFD01CC00CA3470 /* Exceptions for "BuddyGuard Phone" folder in "BuddyGuard WatchOs Watch App" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				Connect2Watch.swift,
 				Model/UserState.swift,
 				Services/LocationManager.swift,
 				Services/RouteManager.swift,
@@ -162,8 +159,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E9ECC3B72FFD1F2400CA3470 /* FirebaseFirestore in Frameworks */,
-				E9ECC3B92FFD1F4300CA3470 /* FirebaseAuth in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -275,8 +270,6 @@
 			);
 			name = "BuddyGuard WatchOs Watch App";
 			packageProductDependencies = (
-				E9ECC3B62FFD1F2400CA3470 /* FirebaseFirestore */,
-				E9ECC3B82FFD1F4300CA3470 /* FirebaseAuth */,
 			);
 			productName = "BuddyGuard WatchOs Watch App";
 			productReference = 8E7B297C2FEE1C4A00E8B444 /* BuddyGuard WatchOs Watch App.app */;
@@ -582,7 +575,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = YES;
-				DEVELOPMENT_TEAM = 3GQRS52F9C;
+				DEVELOPMENT_TEAM = HKS2XN3KMY;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
@@ -635,7 +628,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = YES;
-				DEVELOPMENT_TEAM = 3GQRS52F9C;
+				DEVELOPMENT_TEAM = HKS2XN3KMY;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
@@ -686,14 +679,14 @@
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 3GQRS52F9C;
+				DEVELOPMENT_TEAM = HKS2XN3KMY;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "BuddyGuard-WatchOs-Watch-App-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "BuddyGuard WatchOs";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "BuddyGuard needs your location to send for help during an emergency.";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
-				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = feivelqutby.com.BuddyGuard;
+				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = com.george.BuddyGuard;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -722,14 +715,14 @@
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 3GQRS52F9C;
+				DEVELOPMENT_TEAM = HKS2XN3KMY;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "BuddyGuard-WatchOs-Watch-App-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "BuddyGuard WatchOs";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "BuddyGuard needs your location to send for help during an emergency.";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
-				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = feivelqutby.com.BuddyGuard;
+				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = com.george.BuddyGuard;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -759,7 +752,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 3GQRS52F9C;
+				DEVELOPMENT_TEAM = HKS2XN3KMY;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = IOSWidget/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = IOSWidget;
@@ -792,7 +785,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 3GQRS52F9C;
+				DEVELOPMENT_TEAM = HKS2XN3KMY;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = IOSWidget/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = IOSWidget;
@@ -825,7 +818,7 @@
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 3GQRS52F9C;
+				DEVELOPMENT_TEAM = HKS2XN3KMY;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = WatchWidgetBG/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = WatchWidgetBG;
@@ -858,7 +851,7 @@
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 3GQRS52F9C;
+				DEVELOPMENT_TEAM = HKS2XN3KMY;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = WatchWidgetBG/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = WatchWidgetBG;
@@ -984,16 +977,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = CB53E23A2FF7D94000E7DDCC /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseMessaging;
-		};
-		E9ECC3B62FFD1F2400CA3470 /* FirebaseFirestore */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = CB53E23A2FF7D94000E7DDCC /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
-			productName = FirebaseFirestore;
-		};
-		E9ECC3B82FFD1F4300CA3470 /* FirebaseAuth */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = CB53E23A2FF7D94000E7DDCC /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
-			productName = FirebaseAuth;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
